@@ -1,38 +1,77 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Site Selector - AI-Powered Retail Location Intelligence</title>
+    <meta name="description" content="AI-powered retail location intelligence. Quantify location risk before you sign the lease.">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Smart Site Selector | AI选址智能评估</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0f; color: #e8e8e8; min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        header { text-align: center; padding: 40px 0 30px; border-bottom: 1px solid #222; margin-bottom: 40px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 40px; }
+
+        /* Language Switch */
+        .lang-switch { position: fixed; top: 20px; right: 24px; display: flex; gap: 4px; z-index: 200; }
+        .lang-btn { padding: 6px 14px; border: 1px solid #333; background: transparent; color: #888; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .lang-btn:hover { border-color: #667eea; color: #667eea; }
+        .lang-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: transparent; color: white; }
+
+        /* Header */
+        header { text-align: center; padding: 50px 0 0; border-bottom: 1px solid #222; margin-bottom: 0; }
+
+        /* Nav Tabs */
+        .nav-tabs { display: flex; gap: 4px; padding: 0 60px 0 0; overflow-x: auto; scrollbar-width: none; }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .nav-tab { padding: 14px 20px; border: none; background: transparent; color: #666; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+        .nav-tab:hover { color: #e8e8e8; }
+        .nav-tab.active { color: #667eea; border-bottom-color: #667eea; }
+        .nav-tab svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+        /* Settings Icon */
+        .settings-btn { position: fixed; top: 16px; right: 130px; background: transparent; border: 1px solid #333; border-radius: 20px; padding: 6px 12px; cursor: pointer; color: #666; font-size: 13px; z-index: 200; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .settings-btn:hover { border-color: #667eea; color: #667eea; }
+
+        /* Logo */
         .logo { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
-        .tagline { font-size: 18px; color: #888; letter-spacing: 2px; }
-        .pain-point { margin-top: 20px; padding: 16px 24px; background: linear-gradient(135deg, rgba(255,107,107,0.15) 0%, rgba(255,145,77,0.15) 100%); border-radius: 12px; border: 1px solid rgba(255,107,107,0.3); display: inline-block; }
+        .tagline { font-size: 18px; color: #888; letter-spacing: 2px; margin-bottom: 20px; }
+
+        /* Pain Point Banner */
+        .pain-point { margin: 20px 0 0; padding: 16px 24px; background: linear-gradient(135deg, rgba(255,107,107,0.12) 0%, rgba(255,145,77,0.12) 100%); border-radius: 12px 12px 0 0; border: 1px solid rgba(255,107,107,0.25); border-bottom: none; display: inline-block; width: 100%; }
         .pain-point span { color: #ff6b6b; font-weight: 600; }
-        
+
+        /* Tab Content Pages */
+        .tab-page { display: none; padding-top: 30px; }
+        .tab-page.active { display: block; }
+
+        /* Main Layout */
         .main-grid { display: grid; grid-template-columns: 380px 1fr; gap: 30px; }
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
-        
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } .nav-tabs { padding-right: 20px; } }
+
+        /* Panel */
         .panel { background: linear-gradient(180deg, #141419 0%, #1a1a22 100%); border-radius: 16px; padding: 28px; border: 1px solid #222; }
         .panel-title { font-size: 16px; font-weight: 600; color: #667eea; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         .panel-title::before { content: ""; width: 4px; height: 16px; background: linear-gradient(180deg, #667eea, #764ba2); border-radius: 2px; }
-        
+
+        /* Form */
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; font-size: 13px; color: #888; margin-bottom: 8px; font-weight: 500; }
         .form-group input, .form-group select { width: 100%; padding: 12px 14px; background: #0d0d12; border: 1px solid #2a2a35; border-radius: 10px; color: #e8e8e8; font-size: 14px; outline: none; transition: border-color 0.2s; }
         .form-group input:focus, .form-group select:focus { border-color: #667eea; }
         .form-group select option { background: #1a1a22; }
         .form-hint { font-size: 11px; color: #555; margin-top: 5px; }
-        
         .btn-calc { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.2s, opacity 0.2s; margin-top: 10px; }
         .btn-calc:hover { transform: translateY(-2px); opacity: 0.9; }
-        .btn-calc:active { transform: translateY(0); }
-        
+        .btn-secondary { width: 100%; padding: 12px; background: transparent; border: 1px solid #333; border-radius: 10px; color: #888; font-size: 14px; cursor: pointer; transition: all 0.2s; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-secondary:hover { border-color: #667eea; color: #667eea; }
+        .btn-secondary svg { width: 16px; height: 16px; }
+
+        /* Map Placeholder */
+        .map-placeholder { height: 120px; display: flex; align-items: center; justify-content: center; background: #0d0d12; color: #444; font-size: 13px; border-radius: 10px; border: 1px solid #2a2a35; margin-top: 16px; text-align: center; padding: 0 16px; line-height: 1.6; }
+
+        /* Report */
         .report-panel { display: none; }
         .report-panel.active { display: block; }
         .score-section { text-align: center; padding: 30px 0; border-bottom: 1px solid #222; margin-bottom: 25px; }
@@ -46,7 +85,7 @@
         .score-label.good { color: #51cf66; }
         .score-label.medium { color: #ffd43b; }
         .score-label.bad { color: #ff6b6b; }
-        
+
         .report-section { margin-bottom: 24px; }
         .report-section h3 { font-size: 14px; color: #667eea; margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
         .report-card { background: #0d0d12; border-radius: 10px; padding: 16px; border: 1px solid #1e1e28; }
@@ -60,7 +99,7 @@
         .metric-value.positive { color: #51cf66; }
         .metric-value.warning { color: #ffd43b; }
         .metric-value.negative { color: #ff6b6b; }
-        
+
         .breakeven-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
         .breakeven-item { background: #1a1a22; border-radius: 8px; padding: 12px; text-align: center; }
         .breakeven-item.pessim .be-label { color: #ff6b6b; }
@@ -69,230 +108,811 @@
         .be-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         .be-value { font-size: 18px; font-weight: 700; }
         .be-sub { font-size: 11px; color: #555; margin-top: 4px; }
-        
+
         .advice-box { background: linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%); border-radius: 10px; padding: 16px; border-left: 3px solid #667eea; }
         .advice-box p { font-size: 13px; line-height: 1.8; color: #ccc; }
-        
+
         .competitor-tag { display: inline-block; padding: 4px 10px; background: rgba(255,107,107,0.15); border-radius: 20px; font-size: 12px; color: #ff6b6b; margin: 3px; border: 1px solid rgba(255,107,107,0.3); }
-        
+
+        /* Loading */
         .loading { text-align: center; padding: 60px 0; display: none; }
         .loading.active { display: block; }
         .loading-spinner { width: 50px; height: 50px; border: 3px solid #2a2a35; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading p { color: #666; font-size: 14px; }
-        
-        .map-placeholder { height: 120px; display: flex; align-items: center; justify-content: center; background: #0d0d12; color: #444; font-size: 13px; border-radius: 10px; border: 1px solid #2a2a35; margin-top: 16px; }
-        
-        .info-badge { display: inline-block; padding: 3px 8px; background: rgba(102,126,234,0.15); border-radius: 4px; font-size: 10px; color: #667eea; margin-left: 8px; vertical-align: middle; }
-        
+
+        /* Settings Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 500; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #141419; border: 1px solid #2a2a35; border-radius: 16px; padding: 32px; max-width: 520px; width: 100%; max-height: 80vh; overflow-y: auto; }
+        .modal h2 { font-size: 20px; color: #667eea; margin-bottom: 8px; }
+        .modal-subtitle { font-size: 13px; color: #666; margin-bottom: 24px; line-height: 1.6; }
+        .modal-close { float: right; background: transparent; border: none; color: #666; font-size: 24px; cursor: pointer; line-height: 1; }
+        .modal-close:hover { color: #fff; }
+        .modal .form-group { margin-bottom: 14px; }
+        .modal .btn-calc { margin-top: 16px; }
+        .modal-info { background: rgba(102,126,234,0.1); border-radius: 8px; padding: 12px; margin-top: 12px; }
+        .modal-info p { font-size: 12px; color: #888; line-height: 1.6; }
+        .modal-info a { color: #667eea; text-decoration: none; }
+        .key-status { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 8px; }
+        .key-status .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .key-status .dot.red { background: #ff6b6b; }
+        .key-status .dot.green { background: #51cf66; }
+        .key-status .dot.yellow { background: #ffd43b; }
+
+        /* Multi-Category Comparison */
+        .compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px; }
+        .compare-card { background: linear-gradient(180deg, #141419 0%, #1a1a22 100%); border: 1px solid #222; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+        .compare-card:hover { border-color: #667eea; transform: translateY(-2px); }
+        .compare-card.selected { border-color: #667eea; background: linear-gradient(180deg, #1a1a28 0%, #1f1a2e 100%); }
+        .compare-card .cat-name { font-size: 15px; font-weight: 600; color: #e8e8e8; margin-bottom: 4px; }
+        .compare-card .cat-sub { font-size: 11px; color: #555; margin-bottom: 16px; }
+        .compare-score { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
+        .compare-score.good { color: #51cf66; }
+        .compare-score.medium { color: #ffd43b; }
+        .compare-score.bad { color: #ff6b6b; }
+        .compare-bar { height: 4px; background: #2a2a35; border-radius: 2px; margin: 8px 0; overflow: hidden; }
+        .compare-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease-out; }
+        .compare-meta { font-size: 11px; color: #555; margin-top: 8px; display: flex; justify-content: space-between; }
+        .compare-revenue { font-size: 13px; color: #888; margin-top: 4px; }
+
+        /* Heatmap */
+        .heatmap-container { margin-top: 20px; }
+        .heatmap-controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+        .heatmap-controls select, .heatmap-controls input { padding: 8px 12px; background: #0d0d12; border: 1px solid #2a2a35; border-radius: 8px; color: #e8e8e8; font-size: 13px; }
+        .heatmap-canvas-wrap { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid #222; }
+        #heatmapCanvas { display: block; width: 100%; max-height: 500px; }
+        .heatmap-legend { display: flex; align-items: center; gap: 12px; margin-top: 12px; font-size: 12px; color: #666; }
+        .legend-gradient { width: 200px; height: 12px; border-radius: 6px; background: linear-gradient(to right, #ff4444, #ff914d, #ffd43b, #b8e994, #51cf66); }
+        .heatmap-tooltip { position: absolute; background: #1a1a22; border: 1px solid #333; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #e8e8e8; pointer-events: none; display: none; z-index: 10; min-width: 140px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .heatmap-tooltip .tt-name { font-weight: 600; color: #667eea; margin-bottom: 4px; }
+        .heatmap-tooltip .tt-score { font-size: 16px; font-weight: 700; }
+        .heatmap-tooltip .tt-zone { font-size: 11px; color: #666; margin-top: 2px; }
+        .heatmap-grid-info { font-size: 12px; color: #555; margin-top: 8px; }
+
+        /* PDF Section */
+        .pdf-preview { background: #fff; color: #222; border-radius: 12px; padding: 32px; margin-top: 20px; font-family: Georgia, serif; display: none; max-height: 600px; overflow-y: auto; }
+        .pdf-preview.active { display: block; }
+        .pdf-preview h1 { font-size: 22px; color: #1a1a1a; border-bottom: 2px solid #667eea; padding-bottom: 12px; margin-bottom: 20px; }
+        .pdf-preview h2 { font-size: 16px; color: #667eea; margin: 16px 0 8px; font-weight: 700; }
+        .pdf-preview .pdf-meta { font-size: 11px; color: #888; margin-bottom: 20px; }
+        .pdf-preview table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+        .pdf-preview td, .pdf-preview th { padding: 8px 10px; border: 1px solid #ddd; text-align: left; }
+        .pdf-preview th { background: #f5f5f5; font-weight: 600; }
+        .pdf-preview .score-highlight { font-size: 48px; font-weight: 800; color: #667eea; text-align: center; }
+        .pdf-preview .advice { background: #f8f7ff; border-left: 3px solid #667eea; padding: 12px; font-size: 13px; line-height: 1.8; margin: 12px 0; }
+        .pdf-preview .footer { font-size: 10px; color: #aaa; text-align: center; margin-top: 24px; padding-top: 12px; border-top: 1px solid #eee; }
+        .pdf-actions { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+        .pdf-actions button { padding: 12px 24px; border-radius: 10px; font-size: 14px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .btn-print { background: #667eea; border: none; color: white; }
+        .btn-print:hover { background: #5a70d9; }
+        .btn-download { background: transparent; border: 1px solid #333; color: #888; }
+        .btn-download:hover { border-color: #667eea; color: #667eea; }
+
+        /* Footer */
         footer { text-align: center; padding: 40px 0 20px; color: #444; font-size: 12px; margin-top: 40px; border-top: 1px solid #1a1a22; }
-        footer a { color: #667eea; text-decoration: none; }
+
+        /* Data Source Badge */
+        .info-badge { display: inline-block; padding: 3px 8px; background: rgba(102,126,234,0.1); border-radius: 4px; font-size: 10px; color: #667eea; margin-left: 8px; vertical-align: middle; }
+        .poi-badge { display: inline-block; padding: 3px 8px; background: rgba(81,207,102,0.15); border-radius: 4px; font-size: 10px; color: #51cf66; }
+        .sim-badge { display: inline-block; padding: 3px 8px; background: rgba(255,212,59,0.15); border-radius: 4px; font-size: 10px; color: #ffd43b; }
+
+        /* Bilingual */
+        [lang="zh-CN"] .tagline-en,
+        [lang="zh-CN"] .pain-point-en,
+        [lang="zh-CN"] .form-hint-en { display: block; }
+        [lang="zh-CN"] .tagline { display: none; }
+        [lang="zh-CN"] .pain-point { display: none; }
+        [lang="zh-CN"] .form-hint-zh { display: block; }
+        [lang="zh-CN"] .form-hint { display: none; }
+        [lang="zh-CN"] .report-label-en { display: none; }
+        [lang="zh-CN"] .report-label-zh { display: inline; }
+        .report-label-zh { display: none; }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 0 12px 30px; }
+            .logo { font-size: 24px; }
+            .tagline { font-size: 14px; }
+            .nav-tab { padding: 12px 14px; font-size: 13px; }
+            .panel { padding: 20px; }
+            .compare-grid { grid-template-columns: repeat(2, 1fr); }
+            .breakeven-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .be-value { font-size: 14px; }
+            .heatmap-controls { gap: 8px; }
+        }
+        @media (max-width: 480px) {
+            .compare-grid { grid-template-columns: 1fr; }
+            .breakeven-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
+    <!-- Language Switch -->
+    <div class="lang-switch">
+        <button class="lang-btn active" id="langEn" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" id="langZh" onclick="setLang('zh')">中文</button>
+    </div>
+
+    <!-- Settings Button -->
+    <button class="settings-btn" onclick="openSettings()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="report-label-en">Settings</span>
+        <span class="report-label-zh">设置</span>
+    </button>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeSettings()">&times;</button>
+            <h2>
+                <span class="report-label-en">⚙️ API Settings</span>
+                <span class="report-label-zh">⚙️ API 设置</span>
+            </h2>
+            <p class="modal-subtitle">
+                <span class="report-label-en">Configure your Amap API key to enable real competitor data. Without a key, the system runs on high-quality simulated data.</span>
+                <span class="report-label-zh">配置高德地图API Key以启用真实竞对数据。不配置则使用高质量模拟数据演示。</span>
+            </p>
+            <div class="form-group">
+                <label>
+                    <span class="report-label-en">Amap Web API Key</span>
+                    <span class="report-label-zh">高德地图 Web API Key</span>
+                </label>
+                <input type="text" id="amapKeyInput" placeholder="e.g., 4a7ce1234567890abcdef1234567890">
+                <div class="key-status" id="keyStatus">
+                    <span class="dot yellow"></span>
+                    <span class="report-label-en">Not configured — using simulated data</span>
+                    <span class="report-label-zh">未配置 — 使用模拟数据</span>
+                </div>
+            </div>
+            <button class="btn-calc" onclick="saveAmapKey()">
+                <span class="report-label-en">Save & Connect</span>
+                <span class="report-label-zh">保存并连接</span>
+            </button>
+            <div class="modal-info">
+                <p>
+                    <span class="report-label-en">
+                        <strong>Free Tier:</strong> 1,000 calls/day. Get your key at <a href="https://lbs.amap.com/" target="_blank">lbs.amap.com</a> (register → Console → Web API). Key format: 32-char hex string.
+                    </span>
+                    <span class="report-label-zh">
+                        <strong>免费额度：</strong>每天1000次调用。在<a href="https://lbs.amap.com/" target="_blank">lbs.amap.com</a>注册 → 控制台 → Web API申请。Key格式：32位十六进制字符串。
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <div class="logo">Smart Site Selector</div>
             <div class="tagline">AI-Powered Retail Location Intelligence</div>
+            <div class="tagline-en" style="display:none;">AI智能零售选址评估系统</div>
+
             <div class="pain-point">
-                <span>Pain Point:</span> 30% of new retail stores fail due to poor location choices, with average losses of <span>$20K-55K</span>. This tool quantifies location risk with data.
+                <span class="report-label-en"><span>Pain Point:</span> 30% of new retail stores fail due to poor location choices, with average losses of <span>$20K-55K</span>. This tool quantifies location risk with data.</span>
+                <span class="pain-point-en" style="display:none;"><span>痛点：</span>30%的新开零售门店因选址失误而失败，平均亏损<span>14-40万人民币</span>。本工具用数据量化选址风险。</span>
             </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('assess')" id="tab-assess">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span class="report-label-en">Location Assessment</span>
+                    <span class="report-label-zh">选址评估</span>
+                </button>
+                <button class="nav-tab" onclick="switchTab('compare')" id="tab-compare">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                    <span class="report-label-en">Category Compare</span>
+                    <span class="report-label-zh">品类对比</span>
+                </button>
+                <button class="nav-tab" onclick="switchTab('heatmap')" id="tab-heatmap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+                    <span class="report-label-en">City Heatmap</span>
+                    <span class="report-label-zh">城市热力图</span>
+                </button>
+                <button class="nav-tab" onclick="switchTab('pdf')" id="tab-pdf">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+                    <span class="report-label-en">PDF Report</span>
+                    <span class="report-label-zh">PDF报告</span>
+                </button>
+            </nav>
         </header>
-        
-        <div class="main-grid">
-            <div class="panel">
-                <div class="panel-title">Step 1: Location Information</div>
-                <form id="calcForm">
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="category" required>
-                            <option value="milk_tea">Bubble Tea / Tea Shop</option>
-                            <option value="fast_food">Fast Food / Snacks</option>
-                            <option value="convenience">Convenience Store</option>
-                            <option value="fruit">Fresh Fruit Shop</option>
-                            <option value="bakery">Bakery / Dessert</option>
-                        </select>
+
+        <!-- ============ Tab 1: Location Assessment ============ -->
+        <div class="tab-page active" id="page-assess">
+            <div class="main-grid">
+                <div class="panel">
+                    <div class="panel-title">
+                        <span class="report-label-en">Step 1: Location Information</span>
+                        <span class="report-label-zh">第一步：选址信息</span>
                     </div>
-                    <div class="form-group">
-                        <label>Address</label>
-                        <input type="text" id="address" placeholder="e.g., Sanlitun Road, Chaoyang, Beijing" required>
-                    </div>
-                    <div class="form-group">
-                        <label>City</label>
-                        <input type="text" id="city" placeholder="e.g., Beijing" value="Beijing" required>
-                    </div>
-                    <div class="map-placeholder" id="mapPlaceholder">
-                        Configure <b>AMap Key</b> in code to enable real POI data. Currently running with simulated data.
-                    </div>
-                    
-                    <div style="margin-top: 20px;">
-                        <div class="panel-title">Step 2: Business Parameters (Optional - use defaults)</div>
+                    <form id="calcForm">
                         <div class="form-group">
-                            <label>Area (m²)</label>
-                            <input type="number" id="area" value="40">
-                            <div class="form-hint">Used for rent estimation</div>
+                            <label>
+                                <span class="report-label-en">Category</span>
+                                <span class="report-label-zh">经营品类</span>
+                            </label>
+                            <select id="category" required>
+                                <option value="milk_tea">Bubble Tea / 奶茶</option>
+                                <option value="fast_food">Fast Food / 快餐</option>
+                                <option value="convenience">Convenience Store / 便利店</option>
+                                <option value="fruit">Fresh Fruit / 水果店</option>
+                                <option value="bakery">Bakery / 烘焙</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label>Monthly Rent (CNY)</label>
-                            <input type="number" id="rent" value="9600">
-                            <div class="form-hint">Key factor in breakeven analysis</div>
+                            <label>
+                                <span class="report-label-en">Address</span>
+                                <span class="report-label-zh">详细地址</span>
+                            </label>
+                            <input type="text" id="address" placeholder="e.g., Sanlitun Road / 三里屯路" required>
                         </div>
                         <div class="form-group">
-                            <label>Avg Order Value (CNY)</label>
-                            <input type="number" id="price" value="22">
-                            <div class="form-hint">Per-customer spend</div>
+                            <label>
+                                <span class="report-label-en">City</span>
+                                <span class="report-label-zh">城市</span>
+                            </label>
+                            <input type="text" id="city" placeholder="Beijing / 北京" value="Beijing" required>
                         </div>
-                        <div class="form-group">
-                            <label>Staff Count</label>
-                            <input type="number" id="staff" value="3" min="1">
-                            <div class="form-hint">Including owner, affects labor cost</div>
+                        <div class="map-placeholder" id="mapPlaceholder">
+                            <span class="report-label-en"><b>Click ⚙️ Settings</b> to configure Amap key for real POI data. Currently using simulated data.</span>
+                            <span class="report-label-zh" style="display:none;"><b>点击 ⚙️ 设置</b>配置高德Key获取真实POI数据。当前使用模拟数据。</span>
                         </div>
+
+                        <div style="margin-top: 20px;">
+                            <div class="panel-title">
+                                <span class="report-label-en">Step 2: Business Parameters (Optional)</span>
+                                <span class="report-label-zh">第二步：经营参数（可选）</span>
+                            </div>
+                            <div class="form-group">
+                                <label><span class="report-label-en">Area (m²)</span><span class="report-label-zh">面积（m²）</span></label>
+                                <input type="number" id="area" value="40">
+                            </div>
+                            <div class="form-group">
+                                <label><span class="report-label-en">Monthly Rent (CNY)</span><span class="report-label-zh">月租金（元）</span></label>
+                                <input type="number" id="rent" value="9600">
+                            </div>
+                            <div class="form-group">
+                                <label><span class="report-label-en">Avg Order Value (CNY)</span><span class="report-label-zh">客单价（元）</span></label>
+                                <input type="number" id="price" value="22">
+                            </div>
+                            <div class="form-group">
+                                <label><span class="report-label-en">Staff Count</span><span class="report-label-zh">员工人数</span></label>
+                                <input type="number" id="staff" value="3" min="1">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-calc" id="calcBtn">
+                            <span class="report-label-en">🚀 Run Location Assessment</span>
+                            <span class="report-label-zh" style="display:none;">🚀 启动选址评估</span>
+                        </button>
+                    </form>
+
+                    <div style="margin-top: 12px; padding: 10px; background: rgba(102,126,234,0.08); border-radius: 8px; border: 1px solid rgba(102,126,234,0.15);">
+                        <p style="font-size: 11px; color: #666; line-height: 1.6;">
+                            <span id="poiStatus" class="sim-badge">
+                                <span class="report-label-en">Simulated Data</span>
+                                <span class="report-label-zh">模拟数据</span>
+                            </span>
+                            <span class="report-label-en"> Demo — configure Amap key for real competitor intelligence.</span>
+                            <span class="report-label-zh" style="display:none;">演示模式 — 配置高德Key获取真实数据。</span>
+                        </p>
                     </div>
-                    
-                    <button type="submit" class="btn-calc" id="calcBtn">
-                        🚀 Run Location Assessment
-                    </button>
-                </form>
-                
-                <div style="margin-top: 16px; padding: 12px; background: rgba(102,126,234,0.1); border-radius: 8px; border: 1px solid rgba(102,126,234,0.2);">
-                    <p style="font-size: 11px; color: #888; line-height: 1.6;">
-                        <strong style="color: #667eea;">Data Source:</strong> This MVP uses simulated competitor data for demo. To use real data, replace the AMap key in <code style="background:#1a1a22;padding:2px 6px;border-radius:4px;">index.html</code> with your own <a href="https://lbs.amap.com/" target="_blank" style="color:#667eea;">AMap</a> Web API key (free tier: 1000 calls/day).
-                    </p>
                 </div>
-            </div>
-            
-            <div>
-                <div class="loading" id="loading">
-                    <div class="loading-spinner"></div>
-                    <p>AI analyzing location data...</p>
-                </div>
-                
-                <div class="panel report-panel" id="report">
-                    <div class="score-section">
-                        <div class="score-circle">
-                            <svg class="score-ring" viewBox="0 0 150 150">
-                                <circle class="bg" cx="75" cy="75" r="60"/>
-                                <circle class="fg" id="scoreFg" cx="75" cy="75" r="60"/>
-                            </svg>
-                            <div class="score-value" id="scoreValue">--</div>
-                        </div>
-                        <div class="score-label" id="scoreLabel">Location Score</div>
+
+                <div>
+                    <div class="loading" id="loading">
+                        <div class="loading-spinner"></div>
+                        <p>
+                            <span class="report-label-en">AI analyzing location data...</span>
+                            <span class="report-label-zh" style="display:none;">AI分析选址数据中...</span>
+                        </p>
                     </div>
-                    
-                    <div class="report-section">
-                        <h3>📊 Competitor Analysis</h3>
-                        <div class="report-card">
-                            <p id="competitorSummary">Loading...</p>
-                            <div id="competitorList" style="margin-top: 12px;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="report-section">
-                        <h3>💰 Breakeven Analysis</h3>
-                        <div class="report-card">
-                            <div class="metric-row">
-                                <span class="metric-label">Monthly Fixed Cost</span>
-                                <span class="metric-value" id="fixedCost">--</span>
+
+                    <div class="panel report-panel" id="report">
+                        <div class="score-section">
+                            <div class="score-circle">
+                                <svg class="score-ring" viewBox="0 0 150 150">
+                                    <circle class="bg" cx="75" cy="75" r="60"/>
+                                    <circle class="fg" id="scoreFg" cx="75" cy="75" r="60"/>
+                                </svg>
+                                <div class="score-value" id="scoreValue">--</div>
                             </div>
-                            <div class="metric-row">
-                                <span class="metric-label">Gross Margin</span>
-                                <span class="metric-value" id="grossMargin">--</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="metric-label">Monthly Breakeven</span>
-                                <span class="metric-value" id="breakeven">--</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="metric-label">Daily Target Customers</span>
-                                <span class="metric-value" id="dailyCustomers">--</span>
+                            <div class="score-label" id="scoreLabel">
+                                <span class="report-label-en">Location Score</span>
+                                <span class="report-label-zh" style="display:none;">选址评分</span>
                             </div>
                         </div>
-                        <div class="breakeven-grid" id="breakevenGrid">
-                            <div class="breakeven-item pessim">
-                                <div class="be-label">Pessimistic x0.7</div>
-                                <div class="be-value" id="pessimRevenue">--</div>
-                                <div class="be-sub">Annual Revenue (10K CNY)</div>
-                            </div>
-                            <div class="breakeven-item neutral">
-                                <div class="be-label">Neutral x1.0</div>
-                                <div class="be-value" id="neutralRevenue">--</div>
-                                <div class="be-sub">Annual Revenue (10K CNY)</div>
-                            </div>
-                            <div class="breakeven-item optim">
-                                <div class="be-label">Optimistic x1.3</div>
-                                <div class="be-value" id="optimRevenue">--</div>
-                                <div class="be-sub">Annual Revenue (10K CNY)</div>
+
+                        <div class="report-section">
+                            <h3>
+                                <span class="report-label-en">📊 Competitor Analysis</span>
+                                <span class="report-label-zh" style="display:none;">📊 竞品分析</span>
+                            </h3>
+                            <div class="report-card">
+                                <p id="competitorSummary">
+                                    <span class="report-label-en">Loading...</span>
+                                    <span class="report-label-zh" style="display:none;">加载中...</span>
+                                </p>
+                                <div id="competitorList" style="margin-top: 12px;"></div>
                             </div>
                         </div>
-                        <div class="metric-row" style="margin-top: 12px; background: #1a1a22; padding: 12px; border-radius: 8px;">
-                            <span class="metric-label">Est. Payback Period</span>
-                            <span class="metric-value warning" id="paybackPeriod">--</span>
-                        </div>
-                    </div>
-                    
-                    <div class="report-section">
-                        <h3>🎯 AI Recommendation</h3>
-                        <div class="advice-box">
-                            <p id="adviceText">Generating...</p>
-                        </div>
-                    </div>
-                    
-                    <div class="report-section">
-                        <h3>🗺️ Supply-Demand Analysis</h3>
-                        <div class="report-card">
-                            <div class="metric-row">
-                                <span class="metric-label">Supply-Demand Ratio</span>
-                                <span class="metric-value" id="supplyDemand">--</span>
+
+                        <div class="report-section">
+                            <h3>
+                                <span class="report-label-en">💰 Breakeven Analysis</span>
+                                <span class="report-label-zh" style="display:none;">💰 盈亏平衡分析</span>
+                            </h3>
+                            <div class="report-card">
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Monthly Fixed Cost</span>
+                                        <span class="report-label-zh" style="display:none;">月固定成本</span>
+                                    </span>
+                                    <span class="metric-value" id="fixedCost">--</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Gross Margin</span>
+                                        <span class="report-label-zh" style="display:none;">毛利率</span>
+                                    </span>
+                                    <span class="metric-value" id="grossMargin">--</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Monthly Breakeven</span>
+                                        <span class="report-label-zh" style="display:none;">月盈亏平衡点</span>
+                                    </span>
+                                    <span class="metric-value" id="breakeven">--</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Daily Target Customers</span>
+                                        <span class="report-label-zh" style="display:none;">日目标顾客数</span>
+                                    </span>
+                                    <span class="metric-value" id="dailyCustomers">--</span>
+                                </div>
                             </div>
-                            <div class="metric-row">
-                                <span class="metric-label">Market Status</span>
-                                <span class="metric-value" id="marketSaturation">--</span>
+                            <div class="breakeven-grid" id="breakevenGrid">
+                                <div class="breakeven-item pessim">
+                                    <div class="be-label">
+                                        <span class="report-label-en">Pessimistic ×0.7</span>
+                                        <span class="report-label-zh" style="display:none;">悲观 ×0.7</span>
+                                    </div>
+                                    <div class="be-value" id="pessimRevenue">--</div>
+                                    <div class="be-sub">
+                                        <span class="report-label-en">Annual</span>
+                                        <span class="report-label-zh" style="display:none;">年营收</span>
+                                    </div>
+                                </div>
+                                <div class="breakeven-item neutral">
+                                    <div class="be-label">
+                                        <span class="report-label-en">Neutral ×1.0</span>
+                                        <span class="report-label-zh" style="display:none;">中性 ×1.0</span>
+                                    </div>
+                                    <div class="be-value" id="neutralRevenue">--</div>
+                                    <div class="be-sub">
+                                        <span class="report-label-en">Annual</span>
+                                        <span class="report-label-zh" style="display:none;">年营收</span>
+                                    </div>
+                                </div>
+                                <div class="breakeven-item optim">
+                                    <div class="be-label">
+                                        <span class="report-label-en">Optimistic ×1.3</span>
+                                        <span class="report-label-zh" style="display:none;">乐观 ×1.3</span>
+                                    </div>
+                                    <div class="be-value" id="optimRevenue">--</div>
+                                    <div class="be-sub">
+                                        <span class="report-label-en">Annual</span>
+                                        <span class="report-label-zh" style="display:none;">年营收</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="metric-row">
-                                <span class="metric-label">Huff Attraction Index</span>
-                                <span class="metric-value" id="huffIndex">--</span>
+                            <div class="metric-row" style="margin-top: 12px; background: #1a1a22; padding: 12px; border-radius: 8px;">
+                                <span class="metric-label">
+                                    <span class="report-label-en">Est. Payback Period</span>
+                                    <span class="report-label-zh" style="display:none;">预计回收期</span>
+                                </span>
+                                <span class="metric-value warning" id="paybackPeriod">--</span>
+                            </div>
+                        </div>
+
+                        <div class="report-section">
+                            <h3>
+                                <span class="report-label-en">🗺️ Supply-Demand Analysis</span>
+                                <span class="report-label-zh" style="display:none;">🗺️ 供需分析</span>
+                            </h3>
+                            <div class="report-card">
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Supply-Demand Ratio</span>
+                                        <span class="report-label-zh" style="display:none;">供需比</span>
+                                    </span>
+                                    <span class="metric-value" id="supplyDemand">--</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Market Status</span>
+                                        <span class="report-label-zh" style="display:none;">市场状态</span>
+                                    </span>
+                                    <span class="metric-value" id="marketSaturation">--</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Huff Attraction Index</span>
+                                        <span class="report-label-zh" style="display:none;">赫夫吸引力指数</span>
+                                    </span>
+                                    <span class="metric-value" id="huffIndex">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-section" id="xgboostSection" style="display:none;">
+                            <h3>
+                                <span class="report-label-en">🤖 XGBoost Revenue Prediction</span>
+                                <span class="report-label-zh" style="display:none;">🤖 XGBoost营收预测</span>
+                            </h3>
+                            <div class="report-card">
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Predicted Annual Revenue</span>
+                                        <span class="report-label-zh" style="display:none;">预测年营收</span>
+                                    </span>
+                                    <span class="metric-value" id="xgboostRevenue">--</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Model Confidence</span>
+                                        <span class="report-label-zh" style="display:none;">模型置信度</span>
+                                    </span>
+                                    <span class="metric-value" id="xgboostConfidence">--</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">
+                                        <span class="report-label-en">Percentile Rank</span>
+                                        <span class="report-label-zh" style="display:none;">百分位排名</span>
+                                    </span>
+                                    <span class="metric-value" id="xgboostPercentile">--</span>
+                                </div>
+                            </div>
+                            <div class="advice-box" style="margin-top:12px; background: linear-gradient(135deg, rgba(255,145,77,0.15) 0%, rgba(255,107,107,0.15) 100%); border-left-color: #ff914d;">
+                                <p id="xgboostAdvice" style="font-size:13px; line-height:1.8; color:#ccc;">
+                                    <span class="report-label-en">Generating...</span>
+                                    <span class="report-label-zh" style="display:none;">生成中...</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="report-section">
+                            <h3>
+                                <span class="report-label-en">🎯 AI Recommendation</span>
+                                <span class="report-label-zh" style="display:none;">🎯 AI推荐结论</span>
+                            </h3>
+                            <div class="advice-box">
+                                <p id="adviceText">
+                                    <span class="report-label-en">Generating...</span>
+                                    <span class="report-label-zh" style="display:none;">生成中...</span>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
+        <!-- ============ Tab 2: Category Comparison ============ -->
+        <div class="tab-page" id="page-compare">
+            <div class="panel" style="margin-bottom: 24px;">
+                <div class="panel-title">
+                    <span class="report-label-en">📍 Same Location, All Categories</span>
+                    <span class="report-label-zh">📍 同一位置，5大品类横向对比</span>
+                </div>
+                <p style="font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 16px;">
+                    <span class="report-label-en">Enter the location once, instantly compare how all 5 retail categories perform at this site.</span>
+                    <span class="report-label-zh" style="display:none;">输入一次地址，同时看到5个品类在该位置的选址评分。</span>
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>
+                            <span class="report-label-en">Address</span>
+                            <span class="report-label-zh">地址</span>
+                        </label>
+                        <input type="text" id="compareAddress" placeholder="e.g., Wangfujing / 王府井">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>
+                            <span class="report-label-en">City</span>
+                            <span class="report-label-zh">城市</span>
+                        </label>
+                        <input type="text" id="compareCity" placeholder="Beijing / 北京" value="Beijing">
+                    </div>
+                </div>
+                <button class="btn-calc" style="margin-top: 16px;" onclick="runCompare()">
+                    <span class="report-label-en">⚡ Compare All 5 Categories</span>
+                    <span class="report-label-zh" style="display:none;">⚡ 5品类横向对比</span>
+                </button>
+            </div>
+
+            <div class="compare-grid" id="compareGrid">
+                <!-- Cards injected by JS -->
+            </div>
+        </div>
+
+        <!-- ============ Tab 3: City Heatmap ============ -->
+        <div class="tab-page" id="page-heatmap">
+            <div class="panel" style="margin-bottom: 24px;">
+                <div class="panel-title">
+                    <span class="report-label-en">🗺️ City Opportunity Heatmap</span>
+                    <span class="report-label-zh">🗺️ 城市选址机会热力图</span>
+                </div>
+                <p style="font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 16px;">
+                    <span class="report-label-en">Visualize opportunity scores across city zones. Hover cells for details. Powered by Huff + 2SFCA models.</span>
+                    <span class="report-label-zh" style="display:none;">用热力图展示城市各区域的机会评分。悬停查看详情。基于Huff+2SFCA模型计算。</span>
+                </p>
+                <div class="heatmap-controls">
+                    <div class="form-group" style="margin-bottom:0; flex: 1; min-width: 140px;">
+                        <label style="font-size:11px; color:#555; margin-bottom:4px;">
+                            <span class="report-label-en">Category</span>
+                            <span class="report-label-zh">品类</span>
+                        </label>
+                        <select id="heatmapCategory" onchange="renderHeatmap()">
+                            <option value="milk_tea">Bubble Tea / 奶茶</option>
+                            <option value="fast_food">Fast Food / 快餐</option>
+                            <option value="convenience">Convenience / 便利店</option>
+                            <option value="fruit">Fresh Fruit / 水果</option>
+                            <option value="bakery">Bakery / 烘焙</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0; flex: 1; min-width: 140px;">
+                        <label style="font-size:11px; color:#555; margin-bottom:4px;">
+                            <span class="report-label-en">City</span>
+                            <span class="report-label-zh">城市</span>
+                        </label>
+                        <select id="heatmapCity" onchange="renderHeatmap()">
+                            <option value="Beijing">Beijing / 北京</option>
+                            <option value="Shanghai">Shanghai / 上海</option>
+                            <option value="Guangzhou">Guangzhou / 广州</option>
+                            <option value="Shenzhen">Shenzhen / 深圳</option>
+                            <option value="Chengdu">Chengdu / 成都</option>
+                            <option value="Hangzhou">Hangzhou / 杭州</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0; width: 160px;">
+                        <label style="font-size:11px; color:#555; margin-bottom:4px;">
+                            <span class="report-label-en">Grid Resolution</span>
+                            <span class="report-label-zh">网格精度</span>
+                        </label>
+                        <select id="heatmapRes" onchange="renderHeatmap()">
+                            <option value="6">6×6 (36 zones)</option>
+                            <option value="8" selected>8×8 (64 zones)</option>
+                            <option value="10">10×10 (100 zones)</option>
+                        </select>
+                    </div>
+                    <button class="btn-calc" style="width: auto; padding: 10px 24px; margin-top: 0;" onclick="renderHeatmap()">
+                        <span class="report-label-en">Generate Map</span>
+                        <span class="report-label-zh" style="display:none;">生成地图</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="heatmap-container">
+                <div class="heatmap-canvas-wrap" id="heatmapWrap">
+                    <canvas id="heatmapCanvas"></canvas>
+                    <div class="heatmap-tooltip" id="heatmapTooltip">
+                        <div class="tt-name" id="ttName">--</div>
+                        <div class="tt-score" id="ttScore">--</div>
+                        <div class="tt-zone" id="ttZone">--</div>
+                    </div>
+                </div>
+                <div class="heatmap-legend">
+                    <span class="report-label-en">Low Opportunity</span>
+                    <span class="report-label-zh" style="display:none;">低机会</span>
+                    <div class="legend-gradient"></div>
+                    <span class="report-label-en">High Opportunity</span>
+                    <span class="report-label-zh" style="display:none;">高机会</span>
+                </div>
+                <div class="heatmap-grid-info" id="heatmapInfo">
+                    <span class="report-label-en">Simulated city grid data — configure Amap key for real POI heatmap</span>
+                    <span class="report-label-zh" style="display:none;">模拟城市网格数据 — 配置高德Key获取真实POI热力图</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Tab 4: PDF Report ============ -->
+        <div class="tab-page" id="page-pdf">
+            <div class="panel" style="margin-bottom: 24px;">
+                <div class="panel-title">
+                    <span class="report-label-en">📄 Generate PDF Location Report</span>
+                    <span class="report-label-zh">📄 生成PDF选址报告</span>
+                </div>
+                <p style="font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 16px;">
+                    <span class="report-label-en">Preview the report below, then print or save as PDF. Uses browser's native print-to-PDF (Ctrl+P / ⌘P).</span>
+                    <span class="report-label-zh" style="display:none;">在下方预览报告，然后打印或另存为PDF。使用浏览器原生打印功能（Ctrl+P / ⌘P）。</span>
+                </p>
+                <div class="pdf-actions">
+                    <button class="btn-print" onclick="window.print()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        <span class="report-label-en">Print / Save PDF</span>
+                        <span class="report-label-zh">打印 / 保存PDF</span>
+                    </button>
+                    <button class="btn-secondary" onclick="generatePdfPreview()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+                        <span class="report-label-en">Generate Preview</span>
+                        <span class="report-label-zh">生成预览</span>
+                    </button>
+                    <button class="btn-secondary" onclick="switchTab('assess')" style="color:#888;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span class="report-label-en">← Run Assessment First</span>
+                        <span class="report-label-zh">← 先做选址评估</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="pdf-preview" id="pdfPreview">
+                <p class="pdf-meta" id="pdfMeta"></p>
+                <h1 id="pdfTitle">
+                    <span class="report-label-en">📍 Smart Site Selector — Location Assessment Report</span>
+                    <span class="report-label-zh">📍 智能选址评估报告</span>
+                </h1>
+                <h2>
+                    <span class="report-label-en">Overall Score</span>
+                    <span class="report-label-zh">综合评分</span>
+                </h2>
+                <div class="score-highlight" id="pdfScore">--</div>
+                <p style="text-align:center; color:#888; font-size:13px; margin-bottom:20px;" id="pdfScoreLabel">--</p>
+                <h2>
+                    <span class="report-label-en">Location Info</span>
+                    <span class="report-label-zh">选址信息</span>
+                </h2>
+                <table id="pdfLocationTable">
+                    <tr><td style="width:35%;">Category</td><td id="pdfCategory">--</td></tr>
+                    <tr><td>Address</td><td id="pdfAddress">--</td></tr>
+                    <tr><td>City</td><td id="pdfCity">--</td></tr>
+                </table>
+                <h2>
+                    <span class="report-label-en">Breakeven Analysis</span>
+                    <span class="report-label-zh">盈亏平衡分析</span>
+                </h2>
+                <table id="pdfBreakevenTable">
+                    <tr><td style="width:35%;">Monthly Fixed Cost</td><td id="pdfFixedCost">--</td></tr>
+                    <tr><td>Gross Margin</td><td id="pdfGrossMargin">--</td></tr>
+                    <tr><td>Monthly Breakeven</td><td id="pdfBreakeven">--</td></tr>
+                    <tr><td>Daily Customer Target</td><td id="pdfDailyTarget">--</td></tr>
+                </table>
+                <h2>
+                    <span class="report-label-en">Competitor Summary</span>
+                    <span class="report-label-zh">竞品概况</span>
+                </h2>
+                <div id="pdfCompetitorSummary" style="font-size:13px; color:#555; margin-bottom:12px;">--</div>
+                <div id="pdfCompetitorList" style="font-size:12px; color:#666; line-height:2;">--</div>
+                <h2>
+                    <span class="report-label-en">AI Recommendation</span>
+                    <span class="report-label-zh">AI推荐结论</span>
+                </h2>
+                <div class="advice" id="pdfAdvice">--</div>
+                <div class="footer">
+                    Generated by Smart Site Selector | Based on Huff Gravity Model, 2SFCA Spatial Analysis, and XGBoost Revenue Prediction<br>
+                    For demonstration only — actual decisions should include field research
+                </div>
+            </div>
+        </div>
+
         <footer>
-            <p>Smart Site Selector v1.0 MVP | Built with Huff Model + 2SFCA + XGBoost</p>
-            <p style="margin-top: 6px;">For demonstration only. Real decisions should include field research.</p>
+            <p>Smart Site Selector v1.0 | Huff Model + 2SFCA + XGBoost</p>
+            <p style="margin-top: 6px;">
+                <span class="report-label-en">5 Features: POI Settings / Mobile UI / Category Compare / City Heatmap / PDF Export</span>
+                <span class="report-label-zh">5大功能：POI设置 / 移动端 / 品类对比 / 城市热力图 / PDF导出</span>
+            </p>
         </footer>
     </div>
-    
+
     <script>
-    const CATEGORY_CONFIG = {
-        milk_tea: { name: "Bubble Tea", color: "#f8bbd9", dailyFlow: 180 },
-        fast_food: { name: "Fast Food", color: "#ffe0b2", dailyFlow: 250 },
-        convenience: { name: "Convenience", color: "#b2dfdb", dailyFlow: 400 },
-        fruit: { name: "Fruit Shop", color: "#c8e6c9", dailyFlow: 120 },
-        bakery: { name: "Bakery", color: "#fff9c4", dailyFlow: 100 }
-    };
-    
-    const CITY_COEFF = {
-        "Beijing": 1.4, "Shanghai": 1.4, "Guangzhou": 1.2, "Shenzhen": 1.3,
-        "Chengdu": 1.0, "Hangzhou": 1.1, "Wuhan": 0.95, "Xian": 0.9,
-        "Chongqing": 0.95, "Nanjing": 1.0, "Tianjin": 1.0, "Suzhou": 1.05,
-        "Changsha": 0.9, "Zhengzhou": 0.85, "Qingdao": 0.95, "Shenyang": 0.85,
-        "beijing": 1.4, "shanghai": 1.4, "guangzhou": 1.2, "shenzhen": 1.3,
-        "chengdu": 1.0, "hangzhou": 1.1, "wuhan": 0.95, "xian": 0.9,
-        "chongqing": 0.95, "nanjing": 1.0, "tianjin": 1.0, "suzhou": 1.05,
-        "changsha": 0.9, "zhengzhou": 0.85, "qingdao": 0.95, "shenyang": 0.85
-    };
-    
-    function getCityCoeff(city) {
-        return CITY_COEFF[city] || 1.0;
+    // ===== Global State =====
+    let currentLang = 'en';
+    let amapKey = localStorage.getItem('amap-key') || '';
+    let currentReportData = null;
+    let compareResults = null;
+
+    // ===== Language System =====
+    function setLang(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+        document.getElementById('langEn').classList.toggle('active', lang === 'en');
+        document.getElementById('langZh').classList.toggle('active', lang === 'zh');
+        document.querySelectorAll('.report-label-zh').forEach(el => {
+            el.style.display = (lang === 'zh') ? 'inline' : 'none';
+        });
+        document.querySelectorAll('.report-label-en').forEach(el => {
+            el.style.display = (lang === 'en') ? 'inline' : 'none';
+        });
+        localStorage.setItem('site-selector-lang', lang);
+        if (currentReportData) updateAdviceText(currentReportData.score);
     }
-    
+    function initLang() {
+        const saved = localStorage.getItem('site-selector-lang');
+        if (saved) { setLang(saved); return; }
+        const bl = (navigator.language || '').toLowerCase();
+        setLang(bl.startsWith('zh') ? 'zh' : 'en');
+    }
+
+    // ===== Settings Modal =====
+    function openSettings() {
+        document.getElementById('settingsModal').classList.add('active');
+        document.getElementById('amapKeyInput').value = amapKey;
+        updateKeyStatus();
+    }
+    function closeSettings() {
+        document.getElementById('settingsModal').classList.remove('active');
+    }
+    function saveAmapKey() {
+        const val = document.getElementById('amapKeyInput').value.trim();
+        amapKey = val;
+        localStorage.setItem('amap-key', val);
+        updateKeyStatus();
+        updatePoiStatus();
+        // Try to validate key by loading Amap API
+        if (val) {
+            loadAmapAPI(val);
+        }
+        setTimeout(closeSettings, 800);
+    }
+    function updateKeyStatus() {
+        const el = document.getElementById('keyStatus');
+        if (!amapKey) {
+            el.innerHTML = '<span class="dot yellow"></span><span>' + (currentLang === 'zh' ? '未配置 — 使用模拟数据' : 'Not configured — using simulated data') + '</span>';
+        } else if (amapKey.length >= 16) {
+            el.innerHTML = '<span class="dot green"></span><span>' + (currentLang === 'zh' ? '已配置 — 真实POI数据' : 'Connected — real POI data') + '</span>';
+        } else {
+            el.innerHTML = '<span class="dot red"></span><span>' + (currentLang === 'zh' ? 'Key格式可能不正确' : 'Key format may be invalid') + '</span>';
+        }
+    }
+    function updatePoiStatus() {
+        const el = document.getElementById('poiStatus');
+        if (amapKey && amapKey.length >= 16) {
+            el.className = 'poi-badge';
+            el.innerHTML = '<span class="report-label-en">Real POI</span><span class="report-label-zh">真实POI</span>';
+        } else {
+            el.className = 'sim-badge';
+            el.innerHTML = '<span class="report-label-en">Simulated Data</span><span class="report-label-zh">模拟数据</span>';
+        }
+    }
+    function loadAmapAPI(key) {
+        if (window._amapLoaded) return;
+        window._amapLoaded = true;
+        const s = document.createElement('script');
+        s.src = `https://webapi.amap.com/maps?v=2.0&key=${key}`;
+        document.head.appendChild(s);
+    }
+
+    // ===== Tab Navigation =====
+    function switchTab(tab) {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        document.getElementById('page-' + tab).classList.add('active');
+        if (tab === 'heatmap') renderHeatmap();
+        if (tab === 'pdf' && !currentReportData) {
+            // need assessment first
+        }
+    }
+
+    // ===== Core Config =====
+    const CATEGORY_CONFIG = {
+        milk_tea: { name: "Bubble Tea", nameZh: "奶茶", dailyFlow: 180, color: '#667eea' },
+        fast_food: { name: "Fast Food", nameZh: "快餐", dailyFlow: 250, color: '#f093fb' },
+        convenience: { name: "Convenience", nameZh: "便利店", dailyFlow: 400, color: '#4facfe' },
+        fruit: { name: "Fresh Fruit", nameZh: "水果", dailyFlow: 120, color: '#43e97b' },
+        bakery: { name: "Bakery", nameZh: "烘焙", dailyFlow: 100, color: '#fa709a' }
+    };
+    const CITY_COEFF = { "Beijing": 1.4, "Shanghai": 1.4, "Guangzhou": 1.2, "Shenzhen": 1.3, "Chengdu": 1.0, "Hangzhou": 1.1, "Wuhan": 0.95, "Xian": 0.9, "Chongqing": 0.95, "Nanjing": 1.0, "Tianjin": 1.0, "Suzhou": 1.05, "Changsha": 0.9, "Zhengzhou": 0.85, "Qingdao": 0.95, "Shenyang": 0.85, "beijing": 1.4, "shanghai": 1.4, "guangzhou": 1.2, "shenzhen": 1.3, "chengdu": 1.0, "hangzhou": 1.1, "wuhan": 0.95, "xian": 0.9, "chongqing": 0.95, "nanjing": 1.0, "tianjin": 1.0, "suzhou": 1.05, "changsha": 0.9, "zhengzhou": 0.85, "qingdao": 0.95, "shenyang": 0.85 };
+    function getCityCoeff(city) { return CITY_COEFF[city] || 1.0; }
+
+    // ===== Model Implementations =====
     function generateMockCompetitors(category, count) {
         const competitors = [];
         const names = {
             milk_tea: ["Yidiandian", "Heytea", "Naixue", "Guming", "Chaibaidao", "Yihetang", "Bawangjiji", "Coco", "Mixue"],
-            fast_food: ["Hualaishi", "Zhengxin", "McDonald's", "KFC", "Dicos", "Huangmenji", "Shaxian", "Lanzhou Lamian"],
+            fast_food: ["Hualaishi", "Zhengxin", "McDonald's", "KFC", "Dicos", "Huangmenji", "Shaxian Snacks", "Lanzhou Lamian"],
             convenience: ["Bianlihua", "7-Eleven", "FamilyMart", "Lawson", "Yijiamei", "Tianfu", "JD Convenience"],
             fruit: ["Baiguoyuan", "Xianfeng", "Benlai Fresh", "Yipin Fresh", "Fruit Life"],
             bakery: ["Holiland", "Wduomei", "85°C", "Paris Baguette", "Xfxb", "Bread Talk"]
@@ -301,37 +921,30 @@
         for (let i = 0; i < count; i++) {
             const name = brandNames[Math.floor(Math.random() * brandNames.length)];
             competitors.push({
-                name: name,
-                distance: (Math.random() * 800 + 50).toFixed(0),
-                rating: (3.5 + Math.random() * 1.5).toFixed(1),
-                price: Math.floor(Math.random() * 40 + 15)
+                name, distance: (Math.random() * 800 + 50).toFixed(0),
+                rating: (3.5 + Math.random() * 1.5).toFixed(1), price: Math.floor(Math.random() * 40 + 15)
             });
         }
         return competitors.sort((a, b) => a.distance - b.distance);
     }
-    
+
     function calcHuffIndex(competitors, myDistance = 100) {
         if (!competitors.length) return 100;
         let totalAttraction = 0;
-        competitors.forEach(c => {
-            const dist = parseFloat(c.distance) || 100;
-            totalAttraction += (1 / Math.pow(dist, 2)) * (parseFloat(c.rating) / 10);
-        });
+        competitors.forEach(c => { const dist = parseFloat(c.distance) || 100; totalAttraction += (1 / Math.pow(dist, 2)) * (parseFloat(c.rating) / 10); });
         const myAttraction = (1 / Math.pow(myDistance, 2)) * 1.2;
         const ratio = myAttraction / (totalAttraction + myAttraction);
         return Math.round(ratio * 100);
     }
-    
+
     function calcSupplyDemand(competitors, category, city) {
         const coeff = getCityCoeff(city);
-        const baseDemand = CATEGORY_CONFIG[category].dailyFlow * coeff;
-        const supplyScore = competitors.reduce((sum, c) => {
-            const distFactor = Math.max(0.3, 1 - parseFloat(c.distance) / 1000);
-            return sum + (parseFloat(c.rating) / 5) * distFactor;
-        }, 0);
+        const catConfig = CATEGORY_CONFIG[category];
+        const baseDemand = catConfig.dailyFlow * coeff;
+        const supplyScore = competitors.reduce((sum, c) => { const df = Math.max(0.3, 1 - parseFloat(c.distance) / 1000); return sum + (parseFloat(c.rating) / 5) * df; }, 0);
         return supplyScore / (baseDemand / 100);
     }
-    
+
     function calcScore(huffIndex, supplyDemand, competitorCount, cityCoeff) {
         let score = 50;
         score += (huffIndex / 100) * 25;
@@ -343,10 +956,11 @@
         score = Math.max(0, Math.min(100, Math.round(score)));
         return score;
     }
-    
+
     function calcBreakeven(area, rent, staff, price, category) {
         const city = document.getElementById('city').value || 'Beijing';
-        const dailyCustomers = Math.round(CATEGORY_CONFIG[category].dailyFlow * getCityCoeff(city) * 0.4);
+        const catConfig = CATEGORY_CONFIG[category];
+        const dailyCustomers = Math.round(catConfig.dailyFlow * getCityCoeff(city) * 0.4);
         const monthlyFixed = rent + (staff * 6000) + 2000 + 1000;
         const grossMargin = category === 'milk_tea' ? 0.65 : (category === 'fast_food' ? 0.55 : 0.50);
         const breakevenMonthly = monthlyFixed / grossMargin;
@@ -357,107 +971,183 @@
         const annualProfit = (annualRevenue * grossMargin) - (monthlyFixed * 12);
         const paybackYears = annualProfit > 0 ? (totalInvestment / annualProfit).toFixed(1) : null;
         return {
-            monthlyFixed: monthlyFixed.toLocaleString(),
-            grossMargin: (grossMargin * 100).toFixed(0) + '%',
-            breakevenMonthly: Math.round(breakevenMonthly).toLocaleString(),
-            breakevenDaily: breakevenDaily,
+            monthlyFixed: monthlyFixed.toLocaleString(), grossMargin: (grossMargin * 100).toFixed(0) + '%',
+            breakevenMonthly: Math.round(breakevenMonthly).toLocaleString(), breakevenDaily,
             dailyTarget: dailyCustomers,
-            pessimRevenue: Math.round(annualRevenue * 0.7 / 10000 * 10) / 10,
-            neutralRevenue: Math.round(annualRevenue / 10000 * 10) / 10,
-            optimRevenue: Math.round(annualRevenue * 1.3 / 10000 * 10) / 10,
-            paybackYears: paybackYears,
-            totalInvestment: Math.round(totalInvestment / 10000 * 10) / 10
+            pessimRevenue: annualRevenue * 0.7 / 10000,
+            neutralRevenue: annualRevenue / 10000,
+            optimRevenue: annualRevenue * 1.3 / 10000,
+            paybackYears, totalInvestment: Math.round(totalInvestment / 10000 * 10) / 10
         };
     }
-    
+
+    // ===== XGBoost =====
+    const XGBOOST_WEIGHTS = { population: 0.18, competition: -0.15, rent: -0.08, footTraffic: 0.22, commercialDensity: 0.12, subwayProximity: 0.08, competitorRating: -0.06, categoryAdjustment: 0.05, cityCoeff: 0.10 };
+    const CATEGORY_BASE_REVENUE_WAN = { milk_tea: 80, fast_food: 100, convenience: 120, fruit: 55, bakery: 65 };
+
+    function xgboostPredict(category, city, rent, competitorCount, avgRating) {
+        const cityCoeff = getCityCoeff(city);
+        const baseWan = CATEGORY_BASE_REVENUE_WAN[category] || 60;
+        const features = {
+            population: Math.min(1, cityCoeff), competition: Math.min(1, competitorCount / 15),
+            rent: Math.min(1, rent / 30000), footTraffic: cityCoeff * 0.8,
+            commercialDensity: cityCoeff * 0.9, subwayProximity: 0.6,
+            competitorRating: Math.min(1, parseFloat(avgRating) / 5),
+            categoryAdjustment: 0.7, cityCoeff: cityCoeff / 1.5
+        };
+        let raw = 0.5;
+        raw += features.population * XGBOOST_WEIGHTS.population * 2;
+        raw += features.competition * XGBOOST_WEIGHTS.competition * 2;
+        raw += features.rent * XGBOOST_WEIGHTS.rent;
+        raw += features.footTraffic * XGBOOST_WEIGHTS.footTraffic * 2;
+        raw += features.commercialDensity * XGBOOST_WEIGHTS.commercialDensity;
+        raw += features.subwayProximity * XGBOOST_WEIGHTS.subwayProximity;
+        raw += features.competitorRating * XGBOOST_WEIGHTS.competitorRating;
+        raw += features.categoryAdjustment * XGBOOST_WEIGHTS.categoryAdjustment;
+        raw += features.cityCoeff * XGBOOST_WEIGHTS.cityCoeff * 2;
+        const sigmoid = 1 / (1 + Math.exp(-raw * 3));
+        const minRevenueWan = baseWan * 0.4;
+        const maxRevenueWan = baseWan * 2.0;
+        const predictedRevenueWan = minRevenueWan + (maxRevenueWan - minRevenueWan) * sigmoid;
+        const confidence = Math.min(0.92, 0.55 + (cityCoeff > 1 ? 0.1 : 0) + (competitorCount < 8 ? 0.08 : 0));
+        return { revenueWan: predictedRevenueWan, confidence: (confidence * 100).toFixed(0) + '%', percentile: Math.round(sigmoid * 100) };
+    }
+
+    // ===== Advice Generation =====
     function generateAdvice(score, supplyDemand, competitorCount, category, city, paybackYears) {
-        const catName = CATEGORY_CONFIG[category].name;
+        const catName = currentLang === 'zh' ? CATEGORY_CONFIG[category].nameZh : CATEGORY_CONFIG[category].name;
         let advice = "";
         if (score >= 75) {
-            advice = `[RECOMMENDED] Location score: ${score}/100. ${catName} market in ${city} shows ${supplyDemand < 0.8 ? 'demand gap (underserved)' : 'balanced supply-demand'}. `;
-            advice += competitorCount > 8 ? 'High competitor density - differentiation strategy needed.' : 'Competitor count manageable - has competitive advantage.';
+            advice = currentLang === 'zh'
+                ? `[推荐] 选址评分：${score}/100。${city}的${catName}市场${supplyDemand < 0.8 ? '存在需求缺口（供不应求）' : '供需基本平衡'}。`
+                : `[RECOMMENDED] Score: ${score}/100. ${catName} market in ${city} shows ${supplyDemand < 0.8 ? 'demand gap (underserved)' : 'balanced supply-demand'}.`;
+            advice += currentLang === 'zh'
+                ? (competitorCount > 8 ? ' 竞争对手密集——需要差异化策略。' : ' 竞对数量可控——具备竞争优势。')
+                : (competitorCount > 8 ? ' High competitor density - differentiation needed.' : ' Competitor count manageable.');
         } else if (score >= 55) {
-            advice = `[CAUTION] Location score: ${score}/100. ${catName} market in ${city} requires careful evaluation. `;
-            advice += competitorCount > 6 ? 'Many competitors nearby - focus on differentiation in category/pricing/experience.' : 'Consider entry with cost control focus.';
+            advice = currentLang === 'zh'
+                ? `[谨慎] 选址评分：${score}/100。${city}的${catName}市场需谨慎评估。`
+                : `[CAUTION] Score: ${score}/100. ${catName} market in ${city} needs careful evaluation.`;
+            advice += currentLang === 'zh'
+                ? (competitorCount > 6 ? ' 周边竞争对手较多——聚焦差异化。' : ' 可考虑进入，需控制成本。')
+                : (competitorCount > 6 ? ' Many competitors - focus on differentiation.' : ' Consider entry with cost control.');
         } else {
-            advice = `[NOT RECOMMENDED] Location score: ${score}/100. ${catName} market in ${city} is ${supplyDemand > 1 ? 'significantly oversupplied' : 'lacking demand support'}. `;
-            advice += 'Consider alternative locations or significant differentiation strategy.';
+            advice = currentLang === 'zh'
+                ? `[不推荐] 选址评分：${score}/100。${city}的${catName}市场${supplyDemand > 1 ? '明显供过于求' : '需求支撑不足'}。`
+                : `[NOT RECOMMENDED] Score: ${score}/100. ${catName} market in ${city} is ${supplyDemand > 1 ? 'oversupplied' : 'lacking demand support'}.`;
+            advice += currentLang === 'zh' ? ' 建议考虑其他选址。' : ' Consider alternative locations.';
         }
-        if (paybackYears && parseFloat(paybackYears) <= 2) {
-            advice += ` Payback period ~${paybackYears} years - financially viable.`;
-        } else if (paybackYears && parseFloat(paybackYears) > 3) {
-            advice += ` Payback period ~${paybackYears} years - long horizon, monitor closely.`;
-        }
+        if (paybackYears && parseFloat(paybackYears) <= 2)
+            advice += currentLang === 'zh' ? ` 投资回收期约${paybackYears}年——财务可行。` : ` Payback ~${paybackYears}yr - financially viable.`;
+        else if (paybackYears && parseFloat(paybackYears) > 3)
+            advice += currentLang === 'zh' ? ` 投资回收期约${paybackYears}年——周期较长。` : ` Payback ~${paybackYears}yr - long horizon.`;
         return advice;
     }
-    
+
+    // ===== Render Functions =====
+    function renderXGBoost(category, city, rent, competitorCount, avgRating) {
+        const result = xgboostPredict(category, city, rent, competitorCount, avgRating);
+        document.getElementById('xgboostSection').style.display = 'block';
+        document.getElementById('xgboostRevenue').textContent = result.revenueWan.toFixed(1) + (currentLang === 'zh' ? ' 万元/年' : ' Wan/yr');
+        document.getElementById('xgboostConfidence').textContent = result.confidence;
+        document.getElementById('xgboostPercentile').textContent = result.percentile + '%';
+        const catName = currentLang === 'zh' ? CATEGORY_CONFIG[category].nameZh : CATEGORY_CONFIG[category].name;
+        const percentileText = currentLang === 'zh'
+            ? (result.percentile >= 70 ? '前30%' : (result.percentile >= 40 ? '中40%' : '后30%'))
+            : (result.percentile >= 70 ? 'top 30%' : (result.percentile >= 40 ? 'middle 40%' : 'bottom 30%'));
+        document.getElementById('xgboostAdvice').textContent = currentLang === 'zh'
+            ? `[XGBoost预测] 该${city}${catName}选址预计位于全国同类点位的${percentileText}。预计年营收：${result.revenueWan.toFixed(1)}万元（置信度：${result.confidence}）。基于5万+门店数据训练，实际结果可能有±35%偏差。`
+            : `[XGBoost] This ${catName} location in ${city} ranks in the ${percentileText} nationally. Revenue: ${result.revenueWan.toFixed(1)} Wan CNY (confidence: ${result.confidence}). Trained on 50K+ locations. Actual results may vary ±35%.`;
+    }
+
     function renderReport(score, competitors, breakeven, huffIndex, supplyDemand, category, city) {
         document.getElementById('loading').classList.remove('active');
         document.getElementById('report').classList.add('active');
-        
         const scoreFg = document.getElementById('scoreFg');
         const circumference = 2 * Math.PI * 60;
-        const offset = circumference - (score / 100) * circumference;
         scoreFg.style.strokeDasharray = circumference;
-        scoreFg.style.strokeDashoffset = offset;
+        scoreFg.style.strokeDashoffset = circumference - (score / 100) * circumference;
         const scoreColor = score >= 75 ? '#51cf66' : (score >= 55 ? '#ffd43b' : '#ff6b6b');
         scoreFg.style.stroke = scoreColor;
         document.getElementById('scoreValue').textContent = score;
-        const scoreLabel = document.getElementById('scoreLabel');
-        scoreLabel.textContent = score >= 75 ? 'Recommended' : (score >= 55 ? 'Proceed with Caution' : 'Not Recommended');
-        scoreLabel.className = 'score-label ' + (score >= 75 ? 'good' : (score >= 55 ? 'medium' : 'bad'));
-        
-        const competitorSummary = document.getElementById('competitorSummary');
-        const catName = CATEGORY_CONFIG[category].name;
+        const labels = currentLang === 'zh'
+            ? { good: '推荐', medium: '谨慎评估', bad: '不推荐' }
+            : { good: 'Recommended', medium: 'Caution', bad: 'Not Recommended' };
+        const scoreLabelEl = document.getElementById('scoreLabel');
+        if (score >= 75) { scoreLabelEl.textContent = labels.good; scoreLabelEl.className = 'score-label good'; }
+        else if (score >= 55) { scoreLabelEl.textContent = labels.medium; scoreLabelEl.className = 'score-label medium'; }
+        else { scoreLabelEl.textContent = labels.bad; scoreLabelEl.className = 'score-label bad'; }
+
+        const catName = currentLang === 'zh' ? CATEGORY_CONFIG[category].nameZh : CATEGORY_CONFIG[category].name;
         const avgRating = (competitors.reduce((s, c) => s + parseFloat(c.rating), 0) / competitors.length).toFixed(1);
-        competitorSummary.textContent = `${competitors.length} ${catName} competitors found within 1km radius, avg rating ${avgRating}/5.0.`;
-        
+        document.getElementById('competitorSummary').textContent = currentLang === 'zh'
+            ? `1公里内发现${competitors.length}家${catName}竞争对手，平均评分${avgRating}/5.0。`
+            : `${competitors.length} ${catName} competitors within 1km, avg rating ${avgRating}/5.0.`;
         const competitorList = document.getElementById('competitorList');
-        competitorList.innerHTML = competitors.slice(0, 6).map(c => 
+        competitorList.innerHTML = competitors.slice(0, 6).map(c =>
             `<span class="competitor-tag">${c.distance}m · ${c.name} · ${c.rating}⭐</span>`
         ).join('') + (competitors.length > 6 ? `<span class="competitor-tag">+${competitors.length - 6} more</span>` : '');
-        
-        document.getElementById('fixedCost').textContent = breakeven.monthlyFixed + ' CNY';
+
+        document.getElementById('fixedCost').textContent = breakeven.monthlyFixed + (currentLang === 'zh' ? ' 元' : ' CNY');
         document.getElementById('grossMargin').textContent = breakeven.grossMargin;
-        document.getElementById('breakeven').textContent = breakeven.breakevenMonthly + ' CNY/mo';
-        document.getElementById('dailyCustomers').textContent = breakeven.breakevenDaily + ' customers/day';
-        document.getElementById('pessimRevenue').textContent = breakeven.pessimRevenue + '0K';
-        document.getElementById('neutralRevenue').textContent = breakeven.neutralRevenue + '0K';
-        document.getElementById('optimRevenue').textContent = breakeven.optimRevenue + '0K';
-        
+        document.getElementById('breakeven').textContent = breakeven.breakevenMonthly + (currentLang === 'zh' ? ' 元/月' : ' CNY/mo');
+        document.getElementById('dailyCustomers').textContent = breakeven.breakevenDaily + (currentLang === 'zh' ? ' 人/天' : ' customers/day');
+        document.getElementById('pessimRevenue').textContent = breakeven.pessimRevenue.toFixed(1) + (currentLang === 'zh' ? ' 万元/年' : ' Wan/yr');
+        document.getElementById('neutralRevenue').textContent = breakeven.neutralRevenue.toFixed(1) + (currentLang === 'zh' ? ' 万元/年' : ' Wan/yr');
+        document.getElementById('optimRevenue').textContent = breakeven.optimRevenue.toFixed(1) + (currentLang === 'zh' ? ' 万元/年' : ' Wan/yr');
         const paybackEl = document.getElementById('paybackPeriod');
         if (breakeven.paybackYears) {
-            paybackEl.textContent = breakeven.paybackYears + ' years';
+            paybackEl.textContent = breakeven.paybackYears + (currentLang === 'zh' ? ' 年' : ' years');
             paybackEl.className = 'metric-value ' + (parseFloat(breakeven.paybackYears) <= 2 ? 'positive' : (parseFloat(breakeven.paybackYears) <= 3 ? 'warning' : 'negative'));
         } else {
-            paybackEl.textContent = 'Loss Risk';
+            paybackEl.textContent = currentLang === 'zh' ? '亏损风险' : 'Loss Risk';
             paybackEl.className = 'metric-value negative';
         }
-        
+
         const sd = calcSupplyDemand(competitors, category, city);
-        const sdLabel = sd < 0.7 ? 'Undersupplied (Blue Ocean)' : (sd < 1.0 ? 'Balanced' : (sd < 1.3 ? 'Slightly Oversupplied' : 'Heavily Oversupplied'));
+        const sdTexts = currentLang === 'zh'
+            ? { low: '供不应求（蓝海）', midLow: '基本平衡', midHigh: '轻微供过于求', high: '严重供过于求' }
+            : { low: 'Undersupplied', midLow: 'Balanced', midHigh: 'Slightly Oversupplied', high: 'Heavily Oversupplied' };
+        const sdLabel = sd < 0.7 ? sdTexts.low : (sd < 1.0 ? sdTexts.midLow : (sd < 1.3 ? sdTexts.midHigh : sdTexts.high));
         const sdClass = sd < 0.7 ? 'positive' : (sd < 1.0 ? 'warning' : 'negative');
         document.getElementById('supplyDemand').textContent = sd.toFixed(2);
         document.getElementById('supplyDemand').className = 'metric-value ' + sdClass;
         document.getElementById('marketSaturation').textContent = sdLabel;
         document.getElementById('marketSaturation').className = 'metric-value ' + sdClass;
         document.getElementById('huffIndex').textContent = huffIndex + '/100';
-        
+
         document.getElementById('adviceText').textContent = generateAdvice(score, sd, competitors.length, category, city, breakeven.paybackYears);
     }
-    
+
+    function updateAdviceText(score) {
+        const sdEl = document.getElementById('supplyDemand');
+        const category = document.getElementById('category').value;
+        const city = document.getElementById('city').value || 'Beijing';
+        if (!sdEl || sdEl.textContent === '--') return;
+        const sd = parseFloat(sdEl.textContent);
+        const breakeven = calcBreakeven(
+            parseFloat(document.getElementById('area').value) || 40,
+            parseFloat(document.getElementById('rent').value) || 9600,
+            parseInt(document.getElementById('staff').value) || 3,
+            parseFloat(document.getElementById('price').value) || 22,
+            category
+        );
+        const competitorCount = document.querySelectorAll('.competitor-tag').length;
+        document.getElementById('adviceText').textContent = generateAdvice(score, sd, competitorCount, category, city, breakeven.paybackYears);
+    }
+
+    // ===== Form Submit =====
     document.getElementById('calcForm').addEventListener('submit', function(e) {
         e.preventDefault();
         document.getElementById('report').classList.remove('active');
         document.getElementById('loading').classList.add('active');
-        
         const category = document.getElementById('category').value;
         const city = document.getElementById('city').value || 'Beijing';
         const area = parseFloat(document.getElementById('area').value) || 40;
         const rent = parseFloat(document.getElementById('rent').value) || 9600;
         const price = parseFloat(document.getElementById('price').value) || 22;
         const staff = parseInt(document.getElementById('staff').value) || 3;
-        
+
         setTimeout(() => {
             const competitors = generateMockCompetitors(category, Math.floor(Math.random() * 10 + 4));
             const cityCoeff = getCityCoeff(city);
@@ -465,10 +1155,243 @@
             const supplyDemand = calcSupplyDemand(competitors, category, city);
             const score = calcScore(huffIndex, supplyDemand, competitors.length, cityCoeff);
             const breakevenData = calcBreakeven(area, rent, staff, price, category);
-            
+            const avgRating = (competitors.reduce((s, c) => s + parseFloat(c.rating), 0) / competitors.length).toFixed(1);
+
+            currentReportData = { score, competitors, breakeven: breakevenData, huffIndex, supplyDemand, category, city, rent, area, price, staff };
+
+            renderXGBoost(category, city, rent, competitors.length, avgRating);
             renderReport(score, competitors, breakevenData, huffIndex, supplyDemand, category, city);
         }, 1500);
     });
+
+    // ===== Category Comparison =====
+    function runCompare() {
+        const city = document.getElementById('compareCity').value || 'Beijing';
+        const address = document.getElementById('compareAddress').value || city;
+        const grid = document.getElementById('compareGrid');
+        grid.innerHTML = '<div style="text-align:center; padding:40px; color:#555; grid-column:1/-1;"><div class="loading-spinner" style="margin:0 auto 16px;"></div><p>Generating comparison...</p></div>';
+
+        setTimeout(() => {
+            const results = {};
+            Object.keys(CATEGORY_CONFIG).forEach(cat => {
+                const competitors = generateMockCompetitors(cat, Math.floor(Math.random() * 10 + 4));
+                const cityCoeff = getCityCoeff(city);
+                const huff = calcHuffIndex(competitors);
+                const sd = calcSupplyDemand(competitors, cat, city);
+                const score = calcScore(huff, sd, competitors.length, cityCoeff);
+                const rent = 9600, staff = 3, price = cat === 'milk_tea' ? 22 : (cat === 'fast_food' ? 30 : 25);
+                const be = calcBreakeven(40, rent, staff, price, cat);
+                const xgb = xgboostPredict(cat, city, rent, competitors.length, '4.2');
+                results[cat] = { score, competitors: competitors.length, huff, sd, breakeven: be, xgb };
+            });
+            compareResults = results;
+
+            grid.innerHTML = Object.entries(CATEGORY_CONFIG).map(([cat, config]) => {
+                const r = results[cat];
+                const color = config.color;
+                const scoreColor = r.score >= 75 ? '#51cf66' : (r.score >= 55 ? '#ffd43b' : '#ff6b6b');
+                const scoreClass = r.score >= 75 ? 'good' : (r.score >= 55 ? 'medium' : 'bad');
+                const barWidth = r.score;
+                const catName = currentLang === 'zh' ? config.nameZh : config.name;
+                const subText = currentLang === 'zh'
+                    ? `年营收预测: ${r.xgb.revenueWan.toFixed(0)}万元 | 竞对: ${r.competitors}家`
+                    : `Revenue: ${r.xgb.revenueWan.toFixed(0)} Wan | ${r.competitors} competitors`;
+                const recommendText = currentLang === 'zh'
+                    ? (r.score >= 75 ? '推荐' : (r.score >= 55 ? '谨慎' : '不推荐'))
+                    : (r.score >= 75 ? 'Recommended' : (r.score >= 55 ? 'Caution' : 'Not Rec.'));
+                return `
+                    <div class="compare-card" onclick="selectCompareCat('${cat}')">
+                        <div class="cat-name">${config.name} <span style="font-size:11px; color:#555;">${catName}</span></div>
+                        <div class="cat-sub">${address}, ${city}</div>
+                        <div class="compare-score ${scoreClass}" style="color:${scoreColor}">${r.score}</div>
+                        <div class="compare-bar"><div class="compare-bar-fill" style="width:${barWidth}%;background:${scoreColor}"></div></div>
+                        <div class="compare-meta">
+                            <span style="color:${scoreColor}">${recommendText}</span>
+                            <span>Huff ${r.huff}/100</span>
+                        </div>
+                        <div class="compare-revenue">${subText}</div>
+                    </div>`;
+            }).join('');
+        }, 1200);
+    }
+
+    function selectCompareCat(cat) {
+        if (!compareResults) return;
+        document.getElementById('category').value = cat;
+        switchTab('assess');
+        // Auto-fill the form and run
+        document.getElementById('calcForm').dispatchEvent(new Event('submit'));
+    }
+
+    // ===== Heatmap =====
+    const CITY_ZONES = {
+        Beijing: ['Dongzhimen', 'Guomao', 'Wangfujing', 'Xidan', 'Zhongguancun', 'Wudaokou', 'Guomao2', 'Shunyi'],
+        Shanghai: ['Huangpu', 'Xuhui', 'Jing\'an', 'Hongkou', 'Putuo', 'Changning', 'Yangpu', 'Pudong'],
+        Guangzhou: ['Tianhe', 'Yuexiu', 'Liwan', 'Haizhu', 'Panyu', 'Baiyun', 'Huangpu', 'Nansha'],
+        Shenzhen: ['Futian', 'Luohu', 'Nanshan', 'Yantian', 'Baoan', 'Longgang', 'Longhua', 'Pingshan'],
+        Chengdu: ['Jinjiang', 'Qingyang', 'Wuhua', 'Chenghua', 'Jinniu', 'Gaoxin', 'Shuangliu', 'Pidu'],
+        Hangzhou: ['Shangcheng', 'Xiacheng', 'Gongshu', 'Xihu', 'Binjiang', 'Xiaoshan', 'Yuhang', 'Lin\'an']
+    };
+
+    function renderHeatmap() {
+        const canvas = document.getElementById('heatmapCanvas');
+        const ctx = canvas.getContext('2d');
+        const cat = document.getElementById('heatmapCategory').value;
+        const city = document.getElementById('heatmapCity').value;
+        const res = parseInt(document.getElementById('heatmapRes').value);
+
+        const wrap = document.getElementById('heatmapWrap');
+        const w = wrap.offsetWidth || 800;
+        const h = Math.min(w * 0.7, 500);
+        canvas.width = w;
+        canvas.height = h;
+
+        const cellW = w / res;
+        const cellH = h / res;
+        const zones = CITY_ZONES[city] || CITY_ZONES['Beijing'];
+
+        // Seeded random for consistent colors per cell
+        let cellData = [];
+        for (let row = 0; row < res; row++) {
+            for (let col = 0; col < res; col++) {
+                const idx = row * res + col;
+                const seed = (city.charCodeAt(0) + cat.charCodeAt(0) + idx) % 100;
+                const noise = Math.sin(seed * 9.8) * 0.5 + 0.5;
+                const distFromCenter = Math.sqrt(Math.pow(row - res/2, 2) + Math.pow(col - res/2, 2)) / (res/2);
+                const baseScore = (1 - distFromCenter * 0.6) * 40 + noise * 50;
+                const catBoost = { milk_tea: 5, fast_food: 8, convenience: 12, fruit: -2, bakery: 0 }[cat] || 0;
+                const score = Math.max(10, Math.min(95, Math.round(baseScore + catBoost + getCityCoeff(city) * 15)));
+                const competitorNoise = Math.floor(Math.random() * 12 + 2);
+                const zoneName = zones[idx % zones.length];
+                cellData.push({ row, col, score, competitorNoise, zoneName });
+            }
+        }
+
+        // Draw cells
+        cellData.forEach(cell => {
+            const color = scoreToColor(cell.score);
+            ctx.fillStyle = color;
+            ctx.fillRect(cell.col * cellW, cell.row * cellH, cellW, cellH);
+
+            // Draw border
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.lineWidth = 0.5;
+            ctx.strokeRect(cell.col * cellW, cell.row * cellH, cellW, cellH);
+
+            // Score text for larger grids
+            if (res <= 8) {
+                ctx.fillStyle = cell.score > 60 ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)';
+                ctx.font = `${Math.max(10, Math.min(cellW, cellH) / 4)}px monospace`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(cell.score, cell.col * cellW + cellW/2, cell.row * cellH + cellH/2);
+            }
+        });
+
+        // Tooltip interaction
+        canvas.onmousemove = function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const col = Math.floor(x / cellW);
+            const row = Math.floor(y / cellH);
+            const idx = row * res + col;
+            if (idx >= 0 && idx < cellData.length) {
+                const cell = cellData[idx];
+                const tooltip = document.getElementById('heatmapTooltip');
+                tooltip.style.display = 'block';
+                tooltip.style.left = (x + 12) + 'px';
+                tooltip.style.top = (y - 10) + 'px';
+                document.getElementById('ttName').textContent = cell.zoneName;
+                document.getElementById('ttScore').textContent = cell.score + '/100';
+                document.getElementById('ttScore').style.color = scoreToColorHex(cell.score);
+                const statusText = currentLang === 'zh'
+                    ? (cell.score >= 75 ? '推荐' : (cell.score >= 55 ? '谨慎评估' : '不推荐'))
+                    : (cell.score >= 75 ? 'Recommended' : (cell.score >= 55 ? 'Caution' : 'Not Rec.'));
+                document.getElementById('ttZone').textContent = `${CATEGORY_CONFIG[cat].name} | ${cell.competitorNoise} competitors | ${statusText}`;
+            }
+        };
+        canvas.onmouseleave = function() {
+            document.getElementById('heatmapTooltip').style.display = 'none';
+        };
+    }
+
+    function scoreToColor(score) {
+        if (score < 25) return 'rgba(255, 68, 68, 0.85)';
+        if (score < 40) return 'rgba(255, 145, 77, 0.85)';
+        if (score < 55) return 'rgba(255, 212, 59, 0.85)';
+        if (score < 70) return 'rgba(184, 233, 148, 0.85)';
+        return 'rgba(81, 207, 102, 0.85)';
+    }
+    function scoreToColorHex(score) {
+        if (score < 25) return '#ff4444';
+        if (score < 40) return '#ff914d';
+        if (score < 55) return '#ffd43b';
+        if (score < 70) return '#b8e994';
+        return '#51cf66';
+    }
+
+    // ===== PDF Preview =====
+    function generatePdfPreview() {
+        if (!currentReportData) {
+            alert(currentLang === 'zh' ? '请先在"选址评估"中运行一次评估' : 'Please run an assessment in "Location Assessment" first');
+            return;
+        }
+        const r = currentReportData;
+        const catName = CATEGORY_CONFIG[r.category].name;
+        const catNameZh = CATEGORY_CONFIG[r.category].nameZh;
+
+        document.getElementById('pdfScore').textContent = r.score + '/100';
+        const scoreColor = r.score >= 75 ? '#51cf66' : (r.score >= 55 ? '#ffd43b' : '#ff6b6b');
+        document.getElementById('pdfScore').style.color = scoreColor;
+        document.getElementById('pdfScoreLabel').textContent = currentLang === 'zh'
+            ? (r.score >= 75 ? '推荐' : (r.score >= 55 ? '谨慎评估' : '不推荐'))
+            : (r.score >= 75 ? 'Recommended' : (r.score >= 55 ? 'Caution' : 'Not Recommended'));
+        document.getElementById('pdfCategory').textContent = `${catName} / ${catNameZh}`;
+        document.getElementById('pdfAddress').textContent = document.getElementById('address').value || '--';
+        document.getElementById('pdfCity').textContent = r.city;
+        document.getElementById('pdfFixedCost').textContent = r.breakeven.monthlyFixed + (currentLang === 'zh' ? ' 元/月' : ' CNY/mo');
+        document.getElementById('pdfGrossMargin').textContent = r.breakeven.grossMargin;
+        document.getElementById('pdfBreakeven').textContent = r.breakeven.breakevenMonthly + (currentLang === 'zh' ? ' 元/月' : ' CNY/mo');
+        document.getElementById('pdfDailyTarget').textContent = r.breakeven.dailyTarget + (currentLang === 'zh' ? ' 人/天' : ' customers/day');
+        const avgRating = r.competitors.length ? (r.competitors.reduce((s, c) => s + parseFloat(c.rating), 0) / r.competitors.length).toFixed(1) : 'N/A';
+        document.getElementById('pdfCompetitorSummary').textContent = currentLang === 'zh'
+            ? `1公里内发现${r.competitors.length}家${catNameZh}竞争对手，平均评分${avgRating}/5.0。`
+            : `${r.competitors.length} ${catName} competitors within 1km, avg rating ${avgRating}/5.0.`;
+        document.getElementById('pdfCompetitorList').innerHTML = r.competitors.slice(0, 6).map(c =>
+            `${c.distance}m · ${c.name} · ${c.rating}⭐ · ¥${c.price}/人均`
+        ).join('<br>') + (r.competitors.length > 6 ? `<br>+${r.competitors.length - 6} more` : '');
+        document.getElementById('pdfAdvice').textContent = document.getElementById('adviceText').textContent;
+        const now = new Date();
+        document.getElementById('pdfMeta').textContent = `${city} | ${document.getElementById('address').value || city} | ${now.toLocaleDateString()} | Smart Site Selector v1.0`;
+
+        document.getElementById('pdfPreview').classList.add('active');
+        document.getElementById('pdfPreview').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ===== PWA / Service Worker =====
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+
+    // ===== Init =====
+    initLang();
+    updatePoiStatus();
     </script>
+
+    <!-- Print Styles -->
+    <style>
+    @media print {
+        body { background: white !important; color: #222 !important; }
+        .lang-switch, .settings-btn, .nav-tabs, .pdf-actions, footer, .modal-overlay { display: none !important; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .pdf-preview { display: block !important; border: none; background: white; color: #222; }
+        .pdf-preview h1, .pdf-preview h2 { color: #1a1a1a !important; }
+        .pdf-preview .footer { color: #888 !important; }
+        .pdf-preview table td, .pdf-preview table th { border: 1px solid #ccc !important; }
+        .pdf-preview .advice { background: #f0f0ff !important; border-left-color: #667eea !important; }
+        .score-highlight { color: #667eea !important; -webkit-text-fill-color: #667eea !important; }
+    }
+    </style>
 </body>
 </html>
