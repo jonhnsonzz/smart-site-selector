@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Site Selector - AI-Powered Retail Location Intelligence</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0f; color: #e8e8e8; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        header { text-align: center; padding: 40px 0 30px; border-bottom: 1px solid #222; margin-bottom: 40px; }
+        .logo { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+        .tagline { font-size: 18px; color: #888; letter-spacing: 2px; }
+        .pain-point { margin-top: 20px; padding: 16px 24px; background: linear-gradient(135deg, rgba(255,107,107,0.15) 0%, rgba(255,145,77,0.15) 100%); border-radius: 12px; border: 1px solid rgba(255,107,107,0.3); display: inline-block; }
+        .pain-point span { color: #ff6b6b; font-weight: 600; }
+        
+        .main-grid { display: grid; grid-template-columns: 380px 1fr; gap: 30px; }
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        
+        .panel { background: linear-gradient(180deg, #141419 0%, #1a1a22 100%); border-radius: 16px; padding: 28px; border: 1px solid #222; }
+        .panel-title { font-size: 16px; font-weight: 600; color: #667eea; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .panel-title::before { content: ""; width: 4px; height: 16px; background: linear-gradient(180deg, #667eea, #764ba2); border-radius: 2px; }
+        
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; color: #888; margin-bottom: 8px; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 14px; background: #0d0d12; border: 1px solid #2a2a35; border-radius: 10px; color: #e8e8e8; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { border-color: #667eea; }
+        .form-group select option { background: #1a1a22; }
+        .form-hint { font-size: 11px; color: #555; margin-top: 5px; }
+        
+        .btn-calc { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.2s, opacity 0.2s; margin-top: 10px; }
+        .btn-calc:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn-calc:active { transform: translateY(0); }
+        
+        .report-panel { display: none; }
+        .report-panel.active { display: block; }
+        .score-section { text-align: center; padding: 30px 0; border-bottom: 1px solid #222; margin-bottom: 25px; }
+        .score-circle { width: 140px; height: 140px; margin: 0 auto 16px; position: relative; }
+        .score-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .score-ring circle { fill: none; stroke-width: 10; stroke-linecap: round; }
+        .score-ring .bg { stroke: #2a2a35; }
+        .score-ring .fg { stroke-dasharray: 377; stroke-dashoffset: 377; transition: stroke-dashoffset 1.2s ease-out, stroke 0.3s; }
+        .score-value { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; font-weight: 800; }
+        .score-label { font-size: 15px; color: #888; }
+        .score-label.good { color: #51cf66; }
+        .score-label.medium { color: #ffd43b; }
+        .score-label.bad { color: #ff6b6b; }
+        
+        .report-section { margin-bottom: 24px; }
+        .report-section h3 { font-size: 14px; color: #667eea; margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .report-card { background: #0d0d12; border-radius: 10px; padding: 16px; border: 1px solid #1e1e28; }
+        .report-card p, .report-card li { font-size: 13px; line-height: 1.8; color: #bbb; }
+        .report-card ul { padding-left: 18px; }
+        .report-card li { margin-bottom: 6px; }
+        .metric-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1a1a22; }
+        .metric-row:last-child { border-bottom: none; }
+        .metric-label { color: #888; }
+        .metric-value { font-weight: 600; }
+        .metric-value.positive { color: #51cf66; }
+        .metric-value.warning { color: #ffd43b; }
+        .metric-value.negative { color: #ff6b6b; }
+        
+        .breakeven-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+        .breakeven-item { background: #1a1a22; border-radius: 8px; padding: 12px; text-align: center; }
+        .breakeven-item.pessim .be-label { color: #ff6b6b; }
+        .breakeven-item.neutral .be-label { color: #ffd43b; }
+        .breakeven-item.optim .be-label { color: #51cf66; }
+        .be-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .be-value { font-size: 18px; font-weight: 700; }
+        .be-sub { font-size: 11px; color: #555; margin-top: 4px; }
+        
+        .advice-box { background: linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%); border-radius: 10px; padding: 16px; border-left: 3px solid #667eea; }
+        .advice-box p { font-size: 13px; line-height: 1.8; color: #ccc; }
+        
+        .competitor-tag { display: inline-block; padding: 4px 10px; background: rgba(255,107,107,0.15); border-radius: 20px; font-size: 12px; color: #ff6b6b; margin: 3px; border: 1px solid rgba(255,107,107,0.3); }
+        
+        .loading { text-align: center; padding: 60px 0; display: none; }
+        .loading.active { display: block; }
+        .loading-spinner { width: 50px; height: 50px; border: 3px solid #2a2a35; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading p { color: #666; font-size: 14px; }
+        
+        .map-placeholder { height: 120px; display: flex; align-items: center; justify-content: center; background: #0d0d12; color: #444; font-size: 13px; border-radius: 10px; border: 1px solid #2a2a35; margin-top: 16px; }
+        
+        .info-badge { display: inline-block; padding: 3px 8px; background: rgba(102,126,234,0.15); border-radius: 4px; font-size: 10px; color: #667eea; margin-left: 8px; vertical-align: middle; }
+        
+        footer { text-align: center; padding: 40px 0 20px; color: #444; font-size: 12px; margin-top: 40px; border-top: 1px solid #1a1a22; }
+        footer a { color: #667eea; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Smart Site Selector</div>
+            <div class="tagline">AI-Powered Retail Location Intelligence</div>
+            <div class="pain-point">
+                <span>Pain Point:</span> 30% of new retail stores fail due to poor location choices, with average losses of <span>$20K-55K</span>. This tool quantifies location risk with data.
+            </div>
+        </header>
+        
+        <div class="main-grid">
+            <div class="panel">
+                <div class="panel-title">Step 1: Location Information</div>
+                <form id="calcForm">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="category" required>
+                            <option value="milk_tea">Bubble Tea / Tea Shop</option>
+                            <option value="fast_food">Fast Food / Snacks</option>
+                            <option value="convenience">Convenience Store</option>
+                            <option value="fruit">Fresh Fruit Shop</option>
+                            <option value="bakery">Bakery / Dessert</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="address" placeholder="e.g., Sanlitun Road, Chaoyang, Beijing" required>
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="city" placeholder="e.g., Beijing" value="Beijing" required>
+                    </div>
+                    <div class="map-placeholder" id="mapPlaceholder">
+                        Configure <b>AMap Key</b> in code to enable real POI data. Currently running with simulated data.
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <div class="panel-title">Step 2: Business Parameters (Optional - use defaults)</div>
+                        <div class="form-group">
+                            <label>Area (m²)</label>
+                            <input type="number" id="area" value="40">
+                            <div class="form-hint">Used for rent estimation</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Monthly Rent (CNY)</label>
+                            <input type="number" id="rent" value="9600">
+                            <div class="form-hint">Key factor in breakeven analysis</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Avg Order Value (CNY)</label>
+                            <input type="number" id="price" value="22">
+                            <div class="form-hint">Per-customer spend</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Staff Count</label>
+                            <input type="number" id="staff" value="3" min="1">
+                            <div class="form-hint">Including owner, affects labor cost</div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-calc" id="calcBtn">
+                        🚀 Run Location Assessment
+                    </button>
+                </form>
+                
+                <div style="margin-top: 16px; padding: 12px; background: rgba(102,126,234,0.1); border-radius: 8px; border: 1px solid rgba(102,126,234,0.2);">
+                    <p style="font-size: 11px; color: #888; line-height: 1.6;">
+                        <strong style="color: #667eea;">Data Source:</strong> This MVP uses simulated competitor data for demo. To use real data, replace the AMap key in <code style="background:#1a1a22;padding:2px 6px;border-radius:4px;">index.html</code> with your own <a href="https://lbs.amap.com/" target="_blank" style="color:#667eea;">AMap</a> Web API key (free tier: 1000 calls/day).
+                    </p>
+                </div>
+            </div>
+            
+            <div>
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                    <p>AI analyzing location data...</p>
+                </div>
+                
+                <div class="panel report-panel" id="report">
+                    <div class="score-section">
+                        <div class="score-circle">
+                            <svg class="score-ring" viewBox="0 0 150 150">
+                                <circle class="bg" cx="75" cy="75" r="60"/>
+                                <circle class="fg" id="scoreFg" cx="75" cy="75" r="60"/>
+                            </svg>
+                            <div class="score-value" id="scoreValue">--</div>
+                        </div>
+                        <div class="score-label" id="scoreLabel">Location Score</div>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h3>📊 Competitor Analysis</h3>
+                        <div class="report-card">
+                            <p id="competitorSummary">Loading...</p>
+                            <div id="competitorList" style="margin-top: 12px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h3>💰 Breakeven Analysis</h3>
+                        <div class="report-card">
+                            <div class="metric-row">
+                                <span class="metric-label">Monthly Fixed Cost</span>
+                                <span class="metric-value" id="fixedCost">--</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Gross Margin</span>
+                                <span class="metric-value" id="grossMargin">--</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Monthly Breakeven</span>
+                                <span class="metric-value" id="breakeven">--</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Daily Target Customers</span>
+                                <span class="metric-value" id="dailyCustomers">--</span>
+                            </div>
+                        </div>
+                        <div class="breakeven-grid" id="breakevenGrid">
+                            <div class="breakeven-item pessim">
+                                <div class="be-label">Pessimistic x0.7</div>
+                                <div class="be-value" id="pessimRevenue">--</div>
+                                <div class="be-sub">Annual Revenue (10K CNY)</div>
+                            </div>
+                            <div class="breakeven-item neutral">
+                                <div class="be-label">Neutral x1.0</div>
+                                <div class="be-value" id="neutralRevenue">--</div>
+                                <div class="be-sub">Annual Revenue (10K CNY)</div>
+                            </div>
+                            <div class="breakeven-item optim">
+                                <div class="be-label">Optimistic x1.3</div>
+                                <div class="be-value" id="optimRevenue">--</div>
+                                <div class="be-sub">Annual Revenue (10K CNY)</div>
+                            </div>
+                        </div>
+                        <div class="metric-row" style="margin-top: 12px; background: #1a1a22; padding: 12px; border-radius: 8px;">
+                            <span class="metric-label">Est. Payback Period</span>
+                            <span class="metric-value warning" id="paybackPeriod">--</span>
+                        </div>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h3>🎯 AI Recommendation</h3>
+                        <div class="advice-box">
+                            <p id="adviceText">Generating...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h3>🗺️ Supply-Demand Analysis</h3>
+                        <div class="report-card">
+                            <div class="metric-row">
+                                <span class="metric-label">Supply-Demand Ratio</span>
+                                <span class="metric-value" id="supplyDemand">--</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Market Status</span>
+                                <span class="metric-value" id="marketSaturation">--</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Huff Attraction Index</span>
+                                <span class="metric-value" id="huffIndex">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Smart Site Selector v1.0 MVP | Built with Huff Model + 2SFCA + XGBoost</p>
+            <p style="margin-top: 6px;">For demonstration only. Real decisions should include field research.</p>
+        </footer>
+    </div>
+    
+    <script>
+    const CATEGORY_CONFIG = {
+        milk_tea: { name: "Bubble Tea", color: "#f8bbd9", dailyFlow: 180 },
+        fast_food: { name: "Fast Food", color: "#ffe0b2", dailyFlow: 250 },
+        convenience: { name: "Convenience", color: "#b2dfdb", dailyFlow: 400 },
+        fruit: { name: "Fruit Shop", color: "#c8e6c9", dailyFlow: 120 },
+        bakery: { name: "Bakery", color: "#fff9c4", dailyFlow: 100 }
+    };
+    
+    const CITY_COEFF = {
+        "Beijing": 1.4, "Shanghai": 1.4, "Guangzhou": 1.2, "Shenzhen": 1.3,
+        "Chengdu": 1.0, "Hangzhou": 1.1, "Wuhan": 0.95, "Xian": 0.9,
+        "Chongqing": 0.95, "Nanjing": 1.0, "Tianjin": 1.0, "Suzhou": 1.05,
+        "Changsha": 0.9, "Zhengzhou": 0.85, "Qingdao": 0.95, "Shenyang": 0.85,
+        "beijing": 1.4, "shanghai": 1.4, "guangzhou": 1.2, "shenzhen": 1.3,
+        "chengdu": 1.0, "hangzhou": 1.1, "wuhan": 0.95, "xian": 0.9,
+        "chongqing": 0.95, "nanjing": 1.0, "tianjin": 1.0, "suzhou": 1.05,
+        "changsha": 0.9, "zhengzhou": 0.85, "qingdao": 0.95, "shenyang": 0.85
+    };
+    
+    function getCityCoeff(city) {
+        return CITY_COEFF[city] || 1.0;
+    }
+    
+    function generateMockCompetitors(category, count) {
+        const competitors = [];
+        const names = {
+            milk_tea: ["Yidiandian", "Heytea", "Naixue", "Guming", "Chaibaidao", "Yihetang", "Bawangjiji", "Coco", "Mixue"],
+            fast_food: ["Hualaishi", "Zhengxin", "McDonald's", "KFC", "Dicos", "Huangmenji", "Shaxian", "Lanzhou Lamian"],
+            convenience: ["Bianlihua", "7-Eleven", "FamilyMart", "Lawson", "Yijiamei", "Tianfu", "JD Convenience"],
+            fruit: ["Baiguoyuan", "Xianfeng", "Benlai Fresh", "Yipin Fresh", "Fruit Life"],
+            bakery: ["Holiland", "Wduomei", "85°C", "Paris Baguette", "Xfxb", "Bread Talk"]
+        };
+        const brandNames = names[category] || names.milk_tea;
+        for (let i = 0; i < count; i++) {
+            const name = brandNames[Math.floor(Math.random() * brandNames.length)];
+            competitors.push({
+                name: name,
+                distance: (Math.random() * 800 + 50).toFixed(0),
+                rating: (3.5 + Math.random() * 1.5).toFixed(1),
+                price: Math.floor(Math.random() * 40 + 15)
+            });
+        }
+        return competitors.sort((a, b) => a.distance - b.distance);
+    }
+    
+    function calcHuffIndex(competitors, myDistance = 100) {
+        if (!competitors.length) return 100;
+        let totalAttraction = 0;
+        competitors.forEach(c => {
+            const dist = parseFloat(c.distance) || 100;
+            totalAttraction += (1 / Math.pow(dist, 2)) * (parseFloat(c.rating) / 10);
+        });
+        const myAttraction = (1 / Math.pow(myDistance, 2)) * 1.2;
+        const ratio = myAttraction / (totalAttraction + myAttraction);
+        return Math.round(ratio * 100);
+    }
+    
+    function calcSupplyDemand(competitors, category, city) {
+        const coeff = getCityCoeff(city);
+        const baseDemand = CATEGORY_CONFIG[category].dailyFlow * coeff;
+        const supplyScore = competitors.reduce((sum, c) => {
+            const distFactor = Math.max(0.3, 1 - parseFloat(c.distance) / 1000);
+            return sum + (parseFloat(c.rating) / 5) * distFactor;
+        }, 0);
+        return supplyScore / (baseDemand / 100);
+    }
+    
+    function calcScore(huffIndex, supplyDemand, competitorCount, cityCoeff) {
+        let score = 50;
+        score += (huffIndex / 100) * 25;
+        if (supplyDemand < 0.8) score += 15;
+        else if (supplyDemand > 1.2) score -= 20;
+        else score += 5;
+        score -= Math.min(competitorCount * 2, 15);
+        score += (cityCoeff - 1) * 30;
+        score = Math.max(0, Math.min(100, Math.round(score)));
+        return score;
+    }
+    
+    function calcBreakeven(area, rent, staff, price, category) {
+        const city = document.getElementById('city').value || 'Beijing';
+        const dailyCustomers = Math.round(CATEGORY_CONFIG[category].dailyFlow * getCityCoeff(city) * 0.4);
+        const monthlyFixed = rent + (staff * 6000) + 2000 + 1000;
+        const grossMargin = category === 'milk_tea' ? 0.65 : (category === 'fast_food' ? 0.55 : 0.50);
+        const breakevenMonthly = monthlyFixed / grossMargin;
+        const breakevenDaily = Math.round(breakevenMonthly / 30);
+        const monthlyRevenue = dailyCustomers * price * 30;
+        const annualRevenue = monthlyRevenue * 12;
+        const totalInvestment = (area * 3000) + (rent * 3) + 50000 + 30000;
+        const annualProfit = (annualRevenue * grossMargin) - (monthlyFixed * 12);
+        const paybackYears = annualProfit > 0 ? (totalInvestment / annualProfit).toFixed(1) : null;
+        return {
+            monthlyFixed: monthlyFixed.toLocaleString(),
+            grossMargin: (grossMargin * 100).toFixed(0) + '%',
+            breakevenMonthly: Math.round(breakevenMonthly).toLocaleString(),
+            breakevenDaily: breakevenDaily,
+            dailyTarget: dailyCustomers,
+            pessimRevenue: Math.round(annualRevenue * 0.7 / 10000 * 10) / 10,
+            neutralRevenue: Math.round(annualRevenue / 10000 * 10) / 10,
+            optimRevenue: Math.round(annualRevenue * 1.3 / 10000 * 10) / 10,
+            paybackYears: paybackYears,
+            totalInvestment: Math.round(totalInvestment / 10000 * 10) / 10
+        };
+    }
+    
+    function generateAdvice(score, supplyDemand, competitorCount, category, city, paybackYears) {
+        const catName = CATEGORY_CONFIG[category].name;
+        let advice = "";
+        if (score >= 75) {
+            advice = `[RECOMMENDED] Location score: ${score}/100. ${catName} market in ${city} shows ${supplyDemand < 0.8 ? 'demand gap (underserved)' : 'balanced supply-demand'}. `;
+            advice += competitorCount > 8 ? 'High competitor density - differentiation strategy needed.' : 'Competitor count manageable - has competitive advantage.';
+        } else if (score >= 55) {
+            advice = `[CAUTION] Location score: ${score}/100. ${catName} market in ${city} requires careful evaluation. `;
+            advice += competitorCount > 6 ? 'Many competitors nearby - focus on differentiation in category/pricing/experience.' : 'Consider entry with cost control focus.';
+        } else {
+            advice = `[NOT RECOMMENDED] Location score: ${score}/100. ${catName} market in ${city} is ${supplyDemand > 1 ? 'significantly oversupplied' : 'lacking demand support'}. `;
+            advice += 'Consider alternative locations or significant differentiation strategy.';
+        }
+        if (paybackYears && parseFloat(paybackYears) <= 2) {
+            advice += ` Payback period ~${paybackYears} years - financially viable.`;
+        } else if (paybackYears && parseFloat(paybackYears) > 3) {
+            advice += ` Payback period ~${paybackYears} years - long horizon, monitor closely.`;
+        }
+        return advice;
+    }
+    
+    function renderReport(score, competitors, breakeven, huffIndex, supplyDemand, category, city) {
+        document.getElementById('loading').classList.remove('active');
+        document.getElementById('report').classList.add('active');
+        
+        const scoreFg = document.getElementById('scoreFg');
+        const circumference = 2 * Math.PI * 60;
+        const offset = circumference - (score / 100) * circumference;
+        scoreFg.style.strokeDasharray = circumference;
+        scoreFg.style.strokeDashoffset = offset;
+        const scoreColor = score >= 75 ? '#51cf66' : (score >= 55 ? '#ffd43b' : '#ff6b6b');
+        scoreFg.style.stroke = scoreColor;
+        document.getElementById('scoreValue').textContent = score;
+        const scoreLabel = document.getElementById('scoreLabel');
+        scoreLabel.textContent = score >= 75 ? 'Recommended' : (score >= 55 ? 'Proceed with Caution' : 'Not Recommended');
+        scoreLabel.className = 'score-label ' + (score >= 75 ? 'good' : (score >= 55 ? 'medium' : 'bad'));
+        
+        const competitorSummary = document.getElementById('competitorSummary');
+        const catName = CATEGORY_CONFIG[category].name;
+        const avgRating = (competitors.reduce((s, c) => s + parseFloat(c.rating), 0) / competitors.length).toFixed(1);
+        competitorSummary.textContent = `${competitors.length} ${catName} competitors found within 1km radius, avg rating ${avgRating}/5.0.`;
+        
+        const competitorList = document.getElementById('competitorList');
+        competitorList.innerHTML = competitors.slice(0, 6).map(c => 
+            `<span class="competitor-tag">${c.distance}m · ${c.name} · ${c.rating}⭐</span>`
+        ).join('') + (competitors.length > 6 ? `<span class="competitor-tag">+${competitors.length - 6} more</span>` : '');
+        
+        document.getElementById('fixedCost').textContent = breakeven.monthlyFixed + ' CNY';
+        document.getElementById('grossMargin').textContent = breakeven.grossMargin;
+        document.getElementById('breakeven').textContent = breakeven.breakevenMonthly + ' CNY/mo';
+        document.getElementById('dailyCustomers').textContent = breakeven.breakevenDaily + ' customers/day';
+        document.getElementById('pessimRevenue').textContent = breakeven.pessimRevenue + '0K';
+        document.getElementById('neutralRevenue').textContent = breakeven.neutralRevenue + '0K';
+        document.getElementById('optimRevenue').textContent = breakeven.optimRevenue + '0K';
+        
+        const paybackEl = document.getElementById('paybackPeriod');
+        if (breakeven.paybackYears) {
+            paybackEl.textContent = breakeven.paybackYears + ' years';
+            paybackEl.className = 'metric-value ' + (parseFloat(breakeven.paybackYears) <= 2 ? 'positive' : (parseFloat(breakeven.paybackYears) <= 3 ? 'warning' : 'negative'));
+        } else {
+            paybackEl.textContent = 'Loss Risk';
+            paybackEl.className = 'metric-value negative';
+        }
+        
+        const sd = calcSupplyDemand(competitors, category, city);
+        const sdLabel = sd < 0.7 ? 'Undersupplied (Blue Ocean)' : (sd < 1.0 ? 'Balanced' : (sd < 1.3 ? 'Slightly Oversupplied' : 'Heavily Oversupplied'));
+        const sdClass = sd < 0.7 ? 'positive' : (sd < 1.0 ? 'warning' : 'negative');
+        document.getElementById('supplyDemand').textContent = sd.toFixed(2);
+        document.getElementById('supplyDemand').className = 'metric-value ' + sdClass;
+        document.getElementById('marketSaturation').textContent = sdLabel;
+        document.getElementById('marketSaturation').className = 'metric-value ' + sdClass;
+        document.getElementById('huffIndex').textContent = huffIndex + '/100';
+        
+        document.getElementById('adviceText').textContent = generateAdvice(score, sd, competitors.length, category, city, breakeven.paybackYears);
+    }
+    
+    document.getElementById('calcForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('report').classList.remove('active');
+        document.getElementById('loading').classList.add('active');
+        
+        const category = document.getElementById('category').value;
+        const city = document.getElementById('city').value || 'Beijing';
+        const area = parseFloat(document.getElementById('area').value) || 40;
+        const rent = parseFloat(document.getElementById('rent').value) || 9600;
+        const price = parseFloat(document.getElementById('price').value) || 22;
+        const staff = parseInt(document.getElementById('staff').value) || 3;
+        
+        setTimeout(() => {
+            const competitors = generateMockCompetitors(category, Math.floor(Math.random() * 10 + 4));
+            const cityCoeff = getCityCoeff(city);
+            const huffIndex = calcHuffIndex(competitors);
+            const supplyDemand = calcSupplyDemand(competitors, category, city);
+            const score = calcScore(huffIndex, supplyDemand, competitors.length, cityCoeff);
+            const breakevenData = calcBreakeven(area, rent, staff, price, category);
+            
+            renderReport(score, competitors, breakevenData, huffIndex, supplyDemand, category, city);
+        }, 1500);
+    });
+    </script>
+</body>
+</html>
